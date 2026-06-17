@@ -1,0 +1,20 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <RootNamespace>E_Commerce.Domain</RootNamespace>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+	  <Folder Include="Features\CategoryFeature\Errors\" />
+	  <Folder Include="Features\CategoryFeature\Events\" />
+	  <Folder Include="Features\CategoryFeature\ValueObjects\" />
+	  <Folder Include="Features\ProductFeature\Events\" />
+	  <Folder Include="Features\ProductFeature\ValueObjects\" />
+
+ 
+  </ItemGroup>
+
+</Project>
