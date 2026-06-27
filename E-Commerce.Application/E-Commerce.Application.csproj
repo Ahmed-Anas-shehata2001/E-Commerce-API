@@ -19,7 +19,41 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Common\Exceptions\" />
+    <Folder Include="Common\Contracts\Email\" />
+    <Folder Include="Common\Contracts\Storage\" />
+    <Folder Include="Common\Contracts\Payments\" />
+    <Folder Include="Common\Mapping\" />
+    <Folder Include="Features\Identity\Authentication\Login\" />
+    <Folder Include="Features\Identity\Authentication\Logout\" />
+    <Folder Include="Features\Identity\Authentication\ForgetPassword\" />
+    <Folder Include="Features\Identity\Authentication\ChangePassword\" />
+    <Folder Include="Features\Identity\Authentication\Enable2FA\" />
+    <Folder Include="Features\Identity\Authentication\ExternalLogin\" />
+    <Folder Include="Features\Identity\Authentication\ResendVerfication\" />
+    <Folder Include="Features\Identity\Authentication\VerifyEmail\" />
+    <Folder Include="Features\Identity\Authentication\ResetPassword\" />
+    <Folder Include="Features\Identity\Authentication\RevokeToken\" />
+    <Folder Include="Features\Identity\Authentication\RefreshToken\" />
+    <Folder Include="Features\Identity\Authentication\Register\" />
+    <Folder Include="Features\Identity\Permissions\GetAllPermissions\" />
+    <Folder Include="Features\Identity\Roles\CreateRole\" />
+    <Folder Include="Features\Identity\Roles\DeleteRole\" />
+    <Folder Include="Features\Identity\Users\AssignRoleToUser\" />
+    <Folder Include="Features\Identity\Roles\GetAllRoles\" />
+    <Folder Include="Features\Identity\Roles\GetRoleById\" />
+    <Folder Include="Features\Identity\Roles\AssignPermissionsToRole\" />
+    <Folder Include="Features\Identity\Roles\RemovePermissionsFromRole\" />
+    <Folder Include="Features\Identity\Roles\UpdateRole\" />
+    <Folder Include="Features\Identity\Users\RemoveRoleFromUser\" />
+    <Folder Include="Features\Identity\Users\GetUserById\" />
+    <Folder Include="Features\Identity\Users\GetAllUsers\" />
+    <Folder Include="Features\Identity\Users\BanUser\" />
+    <Folder Include="Features\Identity\Users\DeleteUser\" />
+    <Folder Include="Features\Identity\Users\LockoutUser\" />
+    <Folder Include="Features\Identity\Users\GetCurrentUser\" />
+    <Folder Include="Features\Identity\Users\UnbanUser\" />
+    <Folder Include="Features\Identity\Users\UpdateProfile\" />
+    <Folder Include="Features\Identity\Users\UploadAvatar\" />
   </ItemGroup>
 
 </Project>

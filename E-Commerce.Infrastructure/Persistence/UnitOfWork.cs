@@ -1,4 +1,6 @@
-﻿using E_Commerce.Application.Common.Interfaces;
+﻿
+
+using E_Commerce.Domain.Common.Interfaces;
 
 namespace E_Commerce.Infrastructure.Persistence
 {

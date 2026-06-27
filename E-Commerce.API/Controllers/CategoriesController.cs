@@ -1,5 +1,6 @@
-﻿using E_Commerce.Application.Features.CategoryFeature.Commands;
+﻿using E_Commerce.Application.Features.CategoryFeature.CreateCategory;
 using E_Commerce.Application.Features.CategoryFeature.Queries;
+using E_Commerce.Application.Features.CategoryFeature.UpdateProduct;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
