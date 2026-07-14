@@ -1,19 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿
 
 namespace E_Commerce.Domain.Common.Errors
 {
-    public class Error 
+  
+
+    public enum ErrorType { Failure, NotFound, Validation, Conflict, Unauthorized }
+
+    public sealed class Error
     {
-        public string Message { get; }
         public string Code { get; }
-        public Error(string message, string code)
-        {
-            Message = message;
-            Code = code;
-        }
+        public string Message { get; }
+        public ErrorType Type { get; }
+        public Error(string code, string message, ErrorType type = ErrorType.Failure)
+        { Code = code; Message = message; Type = type; }
     }
 }

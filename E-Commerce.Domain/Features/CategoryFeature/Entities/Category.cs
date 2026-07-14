@@ -1,11 +1,6 @@
 ﻿using E_Commerce.Domain.Common.Base;
 using E_Commerce.Domain.Features.CategoryFeature.Exceptions;
-using E_Commerce.Domain.Features.ProductFeature.Entites;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using E_Commerce.Domain.Features.ProductFeature.Entities;
 
 namespace E_Commerce.Domain.Features.CategoryFeature.Entities
 {

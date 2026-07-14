@@ -1,8 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿
+
+using System.Reflection;
 
 namespace E_Commerce.Infrastructure.Identity
 {
@@ -20,6 +18,16 @@ namespace E_Commerce.Infrastructure.Identity
         public static class Categories
         {
         
+        }
+
+        public static IReadOnlyList<string> GetAll()
+        {
+            return typeof(Permissions)
+                .GetNestedTypes(BindingFlags.Public)
+                .SelectMany(t => t.GetFields(BindingFlags.Public | BindingFlags.Static))
+                .Where(f => f.IsLiteral && !f.IsInitOnly)
+                .Select(f => (string)f.GetRawConstantValue()!)
+                .ToList();
         }
     }
 }

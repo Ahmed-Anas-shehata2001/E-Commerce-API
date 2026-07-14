@@ -1,4 +1,4 @@
-﻿using E_Commerce.Domain.Features.ProductFeature.Entites;
+﻿using E_Commerce.Domain.Features.ProductFeature.Entities;
 using E_Commerce.Domain.Features.ProductFeature.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
@@ -6,9 +6,9 @@ namespace E_Commerce.Infrastructure.Persistence.Repositories
 {
     public class ProductRepository : IProductRepository
     {
-        private readonly AppDbContext _context;
+        private readonly ApplicationDbContext _context;
 
-        public ProductRepository(AppDbContext context)
+        public ProductRepository(ApplicationDbContext context)
         {
             _context = context;
         }

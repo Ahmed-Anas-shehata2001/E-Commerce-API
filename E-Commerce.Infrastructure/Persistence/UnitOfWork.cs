@@ -14,9 +14,9 @@ namespace E_Commerce.Infrastructure.Persistence
     //👉 That IS Unit of Work behavior.
     public class UnitOfWork : IUnitOfWork
     {
-        private readonly AppDbContext _context;
+        private readonly ApplicationDbContext _context;
 
-        public UnitOfWork(AppDbContext context)
+        public UnitOfWork(ApplicationDbContext context)
         {
             _context = context;
         }

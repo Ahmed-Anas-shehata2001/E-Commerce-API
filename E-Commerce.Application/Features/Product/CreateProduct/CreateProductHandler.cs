@@ -1,5 +1,5 @@
 ﻿using E_Commerce.Domain.Features.CategoryFeature.Interfaces;
-using E_Commerce.Domain.Features.ProductFeature.Entites;
+using E_Commerce.Domain.Features.ProductFeature.Entities;
 using E_Commerce.Domain.Features.ProductFeature.Interfaces;
 using MediatR;
 
@@ -29,7 +29,7 @@ namespace E_Commerce.Application.Features.Product.CreateProduct
 
             // ✅ Create domain entity
 
-            Product product = new Product(
+            E_Commerce.Domain.Features.ProductFeature.Entities.Product product = new E_Commerce.Domain.Features.ProductFeature.Entities.Product(
                 request.Name,
                 request.Description,
                 request.Price,

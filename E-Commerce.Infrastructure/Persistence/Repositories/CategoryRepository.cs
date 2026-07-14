@@ -6,9 +6,9 @@ namespace E_Commerce.Infrastructure.Persistence.Repositories
 {
     public class CategoryRepository : ICategoryRepository
     {
-        private readonly AppDbContext _context;
+        private readonly ApplicationDbContext _context;
 
-        public CategoryRepository(AppDbContext context)
+        public CategoryRepository(ApplicationDbContext context)
         {
             _context = context;
         }

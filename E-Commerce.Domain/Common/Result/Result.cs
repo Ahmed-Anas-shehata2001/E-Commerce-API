@@ -23,6 +23,21 @@ namespace E_Commerce.Domain.Common.Result
 
         public static Result Failure(Error error)
             => new(false, error);
+
+        /// <summary>
+        /// Creates a failure result with a simple error message.
+        /// </summary>
+        public static Result Failure(string message)
+            => new(false, new Error(message, string.Empty));
+
+        /// <summary>
+        /// Creates a failure result with multiple error messages.
+        /// </summary>
+        public static Result Failure(params string[] messages)
+        {
+            var message = string.Join(", ", messages);
+            return new(false, new Error(message, string.Empty));
+        }
     }
 
     // 2. Generic Result<T>   // success / failure + value (for success) or error (for failure)  // actions with data (GetProduct, GetUser, etc.)
@@ -42,5 +57,20 @@ namespace E_Commerce.Domain.Common.Result
 
         public static Result<T> Failure(Error error)
             => new(false, default!, error);
+
+        /// <summary>
+        /// Creates a failure result with a simple error message.
+        /// </summary>
+        public static Result<T> Failure(string message)
+            => new(false, default!, new Error(message, string.Empty));
+
+        /// <summary>
+        /// Creates a failure result with multiple error messages.
+        /// </summary>
+        public static Result<T> Failure(params string[] messages)
+        {
+            var message = string.Join(", ", messages);
+            return new(false, default!, new Error(message, string.Empty));
+        }
     }
 }

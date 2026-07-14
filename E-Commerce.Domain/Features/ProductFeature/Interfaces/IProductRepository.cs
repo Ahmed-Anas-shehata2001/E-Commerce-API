@@ -1,4 +1,5 @@
 ﻿using E_Commerce.Domain.Features.ProductFeature.Entites;
+using E_Commerce.Domain.Features.ProductFeature.Entities;
 
 namespace E_Commerce.Domain.Features.ProductFeature.Interfaces
 {

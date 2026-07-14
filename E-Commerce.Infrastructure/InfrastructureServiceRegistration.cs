@@ -1,11 +1,14 @@
-﻿using E_Commerce.Application.Common.Interfaces;
-using E_Commerce.Domain.Features.CategoryFeature.Interfaces;
-using E_Commerce.Domain.Features.ProductFeature.Interfaces;
-using E_Commerce.Infrastructure.Persistence;
-using E_Commerce.Infrastructure.Persistence.Repositories;
-using Microsoft.EntityFrameworkCore;
+﻿using E_Commerce.Application.Common.Contracts.Identity;
+using E_Commerce.Infrastructure.Identity.Autherization;
+using E_Commerce.Infrastructure.Identity.Extensions;
+using E_Commerce.Infrastructure.Identity.JWT;
+using E_Commerce.Infrastructure.Identity.Services;
+using E_Commerce.Infrastructure.Identity.Services.SendGrid;
+using E_Commerce.Infrastructure.Persistence.Extensions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
+using SendGrid;
 
 namespace E_Commerce.Infrastructure
 {
@@ -15,17 +18,48 @@ namespace E_Commerce.Infrastructure
             this IServiceCollection services,
             IConfiguration configuration)
         {
-            // ✅ DbContext
-            services.AddDbContext<AppDbContext>(options =>
-                options.UseSqlServer(
-                    configuration.GetConnectionString("DefaultConnection")));
 
-            // ✅ Repositories
-            services.AddScoped<IProductRepository, ProductRepository>();
-            services.AddScoped<ICategoryRepository, CategoryRepository>();
 
-            // Unit of Work (MISSING PIECE)
-            services.AddScoped<IUnitOfWork, UnitOfWork>();
+            // register DbContext  , Repositoreis  , unit of work  ( ** Data ** )
+            services.AddPersistenceServices(configuration);
+
+            // resister identity
+            services.AddIdentityServices(configuration);
+            // register JWT
+            services.AddJwtAuthentication(configuration);
+            // register Autherization
+            services.AddAuthorizationServices();
+
+            services.AddScoped<ITokenService, TokenService>();
+            services.AddScoped<IAuthenticationService, AuthenticationService>();
+            services.AddScoped<IUserService, UserService>();
+            services.AddScoped<IRoleService, RoleService>();
+            services.AddScoped<ICurrentUserService, CurrentUserService>();
+
+
+            //services.AddScoped<IPermissionService, PermissionService>();
+
+
+            // register configuraiton like JWTSettings  ( options pattern ) 
+            services.Configure<JWTSettings>(
+         configuration.GetSection("JWTSettings"));
+
+
+
+            // register SendGridSettings 
+            services.Configure<SendGridSettings>(configuration.GetSection("SendGrid"));
+            services.AddSingleton<ISendGridClient>(sp =>
+            {
+                var settings = sp.GetRequiredService<IOptions<SendGridSettings>>().Value;
+
+                return new SendGridClient(settings.ApiKey);
+            });
+            services.AddScoped<IEmailSender, SendGridEmailService>();
+
+
+            // register HttpContext Accessor
+            services.AddHttpContextAccessor();
+
 
             return services;
         }
