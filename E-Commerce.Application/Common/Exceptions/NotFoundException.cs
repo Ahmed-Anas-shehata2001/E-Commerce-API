@@ -1,12 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿namespace E_Commerce.Application.Common.Exceptions;
 
-namespace E_Commerce.Application.Common.Exceptions
+// base  :NotFoundException
+public abstract class NotFoundException : Exception
 {
-    public class NotFoundException
+    protected NotFoundException(string message)
+        : base(message)
     {
     }
 }

@@ -106,5 +106,54 @@ namespace E_Commerce.API.Controllers
                 ? NoContent()
                 : BadRequest(result);
         }
+        /*
+         * [ Authorize ]  --> it only checks:
+
+            Is the JWT valid?
+            Is the signature valid?
+            Has it expired?
+         */
+        [Authorize]
+        [HttpPost("change-password")]
+        public async Task<IActionResult> ChangePassword(ChangePasswordCommand command)
+        {
+            var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (!Guid.TryParse(userIdClaim, out var userId))
+                return Unauthorized();
+
+            var newCommand = command with
+            {
+                UserId = userId
+            };
+
+            var result = await _mediator.Send(newCommand);
+
+            return result.IsSuccess
+                ? NoContent()
+                : BadRequest(result);
+        }
+
+        [AllowAnonymous]
+        [HttpPost("forgot-password")]
+        public async Task<IActionResult> ForgotPassword(ForgotPasswordCommand command)
+        {
+            var result = await _mediator.Send(command);
+
+            return result.IsSuccess
+                ? NoContent()
+                : BadRequest(result);
+        }
+
+        [AllowAnonymous]
+        [HttpPost("reset-password")]
+        public async Task<IActionResult> ResetPassword(ResetPasswordCommand command)
+        {
+            var result = await _mediator.Send(command);
+
+            return result.IsSuccess
+                ? NoContent()
+                : BadRequest(result);
+        }
     }
 }

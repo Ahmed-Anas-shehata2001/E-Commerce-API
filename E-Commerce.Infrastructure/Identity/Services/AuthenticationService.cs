@@ -3,6 +3,7 @@ using E_Commerce.Application.Common.Contracts.Identity;
 using E_Commerce.Application.Common.Contracts.Identity.Models;
 using E_Commerce.Domain.Common.Result;
 using E_Commerce.Infrastructure.Identity.Identity_Entites;
+using E_Commerce.Infrastructure.Identity.Identity_Entites.UserSecurityEvents;
 using E_Commerce.Infrastructure.Persistence;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -10,15 +11,18 @@ using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
+using UAParser;
 using static E_Commerce.Application.Common.Contracts.Identity.Models.TwoFactorModels;
 
 namespace E_Commerce.Infrastructure.Identity.Services
 {
     public class AuthenticationService : IAuthenticationService
     {
+        private readonly Parser _parser;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly ApplicationDbContext _context;
         private readonly ILogger<AuthenticationService> _logger;
@@ -31,6 +35,7 @@ namespace E_Commerce.Infrastructure.Identity.Services
         private readonly IEnumerable<IExternalAuthValidator> _externalAuthValidators;
 
         public AuthenticationService(
+            Parser parser,
             IHttpContextAccessor httpContextAccessor,
             ApplicationDbContext context,
             ILogger<AuthenticationService> logger,
@@ -42,6 +47,7 @@ namespace E_Commerce.Infrastructure.Identity.Services
             IEmailSender emailSender,
             IEnumerable<IExternalAuthValidator> externalAuthValidators)
         {
+            _parser = parser;
             _httpContextAccessor = httpContextAccessor;
             _context = context;
             _userManager = userManager;
@@ -99,6 +105,8 @@ namespace E_Commerce.Infrastructure.Identity.Services
             {
                 _logger.LogError(ex, "Failed to send confirmation email.");
             }
+
+
 
             return new AuthResult
             {
@@ -205,7 +213,15 @@ namespace E_Commerce.Infrastructure.Identity.Services
             var checkResult = await _signInManager.CheckPasswordSignInAsync(user, request.Password, lockoutOnFailure: true);
 
             if (checkResult.IsLockedOut)
+            {
+                await LogSecurityEventAsync(
+                user.Id,
+                UserSecurityEventType.AccountLocked,
+                "User has been locked.",
+                ct);
                 return AuthResult.Failure("Account is locked. Try again later.");
+            }
+
             if (checkResult.IsNotAllowed)
                 return AuthResult.Failure("Email is not confirmed yet.");
             if (!checkResult.Succeeded)
@@ -214,7 +230,14 @@ namespace E_Commerce.Infrastructure.Identity.Services
             if (await _userManager.GetTwoFactorEnabledAsync(user))
                 return AuthResult.TwoFactorRequired(user.Id);
 
+            await LogSecurityEventAsync(
+            user.Id,
+            UserSecurityEventType.LoginSucceeded,
+            "User logged in successfully.",
+            ct);
+
             return await SignInAsync(user, ct);
+
 
         }
 
@@ -232,14 +255,18 @@ namespace E_Commerce.Infrastructure.Identity.Services
 
             // revoke old token (rotation)
             storedToken.RevokedAtUtc = DateTime.UtcNow;
-            storedToken.RevocationReason = "Rotated";
+            storedToken.RevocationReason = RefreshTokenRevocationReason.Rotated;
             storedToken.LastUsedAtUtc = DateTime.UtcNow;
 
             return await IssueTokensAsync(storedToken.User, storedToken.Session, storedToken, ct);
         }
-
         public async Task<Result> LogoutAsync(Guid userId, CancellationToken ct = default)
         {
+            var ip = _httpContextAccessor.HttpContext?
+                .Connection
+                .RemoteIpAddress?
+                .ToString();
+
             var sessions = await _context.UserSessions
                 .Include(x => x.RefreshTokens)
                 .Where(x => x.UserId == userId && !x.IsRevoked)
@@ -256,7 +283,8 @@ namespace E_Commerce.Infrastructure.Identity.Services
                 foreach (var token in session.RefreshTokens.Where(t => t.IsActive))
                 {
                     token.RevokedAtUtc = DateTime.UtcNow;
-                    token.RevocationReason = "Logout";
+                    token.RevocationReason = RefreshTokenRevocationReason.Logout;
+                    token.RevokedByIp = ip;
                 }
             }
 
@@ -270,11 +298,21 @@ namespace E_Commerce.Infrastructure.Identity.Services
             if (request.NewPassword != request.ConfirmNewPassword)
                 return Result.Failure("New passwords do not match.");
 
-            var user = await _userManager.FindByIdAsync(request.UserId);
+            var user = await _userManager.FindByIdAsync(request.UserId.ToString());
             if (user is null)
                 return Result.Failure("User not found.");
 
             var result = await _userManager.ChangePasswordAsync(user, request.CurrentPassword, request.NewPassword);
+
+            if (result.Succeeded)
+            {
+                await RevokeAllUserTokensAsync(
+                    user.Id,
+                    RefreshTokenRevocationReason.PasswordChanged,
+                    ct);
+                await LogSecurityEventAsync(user.Id, UserSecurityEventType.PasswordChanged, "password changed correclty.");
+
+            }
             return result.Succeeded
                 ? Result.Success()
                 : Result.Failure(result.Errors.Select(e => e.Description).ToArray());
@@ -296,6 +334,12 @@ namespace E_Commerce.Infrastructure.Identity.Services
                 $"Use this token to reset your password: {encodedToken}",
                 ct);
 
+            await LogSecurityEventAsync(
+             user.Id,
+             UserSecurityEventType.PasswordResetRequested,
+             "Password reset requested.",
+             ct);
+
             return Result.Success();
         }
 
@@ -309,11 +353,33 @@ namespace E_Commerce.Infrastructure.Identity.Services
                 return Result.Failure("Invalid request.");
 
             var decodedToken = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(request.Token));
-            var result = await _userManager.ResetPasswordAsync(user, decodedToken, request.NewPassword);
+
+
+            var result = await _userManager.ResetPasswordAsync(
+                user,
+                decodedToken,
+                request.NewPassword);
+
+            if (result.Succeeded)
+            {
+                await RevokeAllUserTokensAsync(
+                    user.Id,
+                    RefreshTokenRevocationReason.PasswordReset,
+                    ct);
+                await LogSecurityEventAsync(
+                    user.Id,
+                    UserSecurityEventType.PasswordReset,
+                    "Password reset successfully.",
+                    ct);
+            }
+
+
 
             return result.Succeeded
                 ? Result.Success()
                 : Result.Failure(result.Errors.Select(e => e.Description).ToArray());
+
+
         }
 
         public async Task<AuthResult> ExternalLoginAsync(ExternalLoginRequest request, CancellationToken ct = default)
@@ -356,8 +422,19 @@ namespace E_Commerce.Infrastructure.Identity.Services
                     new UserLoginInfo(request.Provider, payload.ProviderKey, request.Provider));
 
                 if (!addLoginResult.Succeeded)
+                {
+                    await LogSecurityEventAsync(user.Id, UserSecurityEventType.ExternalLoginFailed, $"External login failed with {request.Provider}.");
                     return AuthResult.Failure(addLoginResult.Errors.Select(e => e.Description).ToArray());
+
+                }
             }
+
+            await LogSecurityEventAsync(
+                user.Id,
+                UserSecurityEventType.ExternalLoginSucceeded,
+                $"External login successed with {request.Provider}.",
+                ct);
+
             return await SignInAsync(user, ct);
 
         }
@@ -393,9 +470,25 @@ namespace E_Commerce.Infrastructure.Identity.Services
                 user, _userManager.Options.Tokens.AuthenticatorTokenProvider, request.Code);
 
             if (!isValid)
+            {
+                await LogSecurityEventAsync(
+                user.Id,
+                UserSecurityEventType.TwoFactorFailed,
+                "Invalid verification code.",
+                ct);
                 return Result.Failure("Invalid authenticator code.");
+            }
+
+
 
             await _userManager.SetTwoFactorEnabledAsync(user, true);
+            await LogSecurityEventAsync(
+            user.Id,
+            UserSecurityEventType.TwoFactorEnabled,
+            "Two-factor authentication enabled.",
+            ct);
+
+
             return Result.Success();
         }
 
@@ -409,7 +502,22 @@ namespace E_Commerce.Infrastructure.Identity.Services
                 user, _userManager.Options.Tokens.AuthenticatorTokenProvider, request.Code);
 
             if (!isValid)
+            {
+                await LogSecurityEventAsync(
+                user.Id,
+                UserSecurityEventType.TwoFactorFailed,
+                "Invalid authenticator code.",
+                ct);
                 return AuthResult.Failure("Invalid authenticator code.");
+
+            }
+
+            await LogSecurityEventAsync(
+            user.Id,
+            UserSecurityEventType.TwoFactorSucceeded,
+            "User authenticated using two-factor authentication.",
+            ct);
+
 
             return await SignInAsync(user, ct);
         }
@@ -465,10 +573,19 @@ namespace E_Commerce.Infrastructure.Identity.Services
     {
         new(ClaimTypes.NameIdentifier, user.Id.ToString()),
         new(ClaimTypes.Email, user.Email!),
-        new(ClaimTypes.Name, user.UserName!)
+        new(ClaimTypes.Name, user.UserName!),
+       new(IdentityClaimTypes.SessionId, session.Id.ToString()),
+       new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()), // so each access token has id 
+
+
     };
 
             claims.AddRange(roles.Select(r => new Claim(ClaimTypes.Role, r)));
+            var permissions = await GetPermissionNamesAsync(roles);
+
+            claims.AddRange(
+                permissions.Select(p =>
+                    new Claim("permission", p)));
 
             var accessToken = _tokenService.GenerateAccessToken(claims);
 
@@ -487,7 +604,8 @@ namespace E_Commerce.Infrastructure.Identity.Services
                 TokenHash = TokenHasher.ComputeHash(refreshToken.Token),
                 CreatedAtUtc = DateTime.UtcNow,
                 ExpiresAtUtc = refreshToken.ExpiresAtUtc,
-                CreatedByIp = ip
+                CreatedByIp = ip,
+
             };
 
             if (previousToken != null)
@@ -511,7 +629,7 @@ namespace E_Commerce.Infrastructure.Identity.Services
                 TwoFactorEnabled = user.TwoFactorEnabled,
                 IsLockedOut = await _userManager.IsLockedOutAsync(user),
                 Roles = roles.ToArray(),
-                Permissions = await GetPermissionNamesAsync(roles)
+                Permissions = permissions.ToArray(),
             };
 
             return AuthResult.Success(
@@ -568,17 +686,43 @@ namespace E_Commerce.Infrastructure.Identity.Services
     ApplicationUser user,
     CancellationToken ct)
         {
+
+            // asp.net core can access  --> user agent  ,  ip 
+            // from * user agent *  we'll access os , browser   but we'll need * UAParser *
+            var httpContext = _httpContextAccessor.HttpContext;
+
+            var userAgent = httpContext?
+                .Request
+                .Headers["User-Agent"]
+                .ToString();
+            var ip = httpContext?
+                .Connection
+                .RemoteIpAddress?
+                .ToString();
+
+            var client = _parser.Parse(userAgent ?? string.Empty);
+            var device =
+            string.IsNullOrWhiteSpace(client.Device.Family) ||
+            client.Device.Family == "Other"
+                ? "Desktop"
+                : client.Device.Family;
+            var browser = client.UA.Family == "Other" ? "Unknown": $"{client.UA.Family} {client.UA.Major}";
+            var os = client.OS.Family == "Other"  ? "Unknown": $"{client.OS.Family} {client.OS.Major}";
             var session = new UserSession
+
+
             {
                 Id = Guid.NewGuid(),
                 UserId = user.Id,
 
-                DeviceName = "Unknown Device",
-                UserAgent = null,
-                IpAddress = null,
+                DeviceName = device,  
+                UserAgent = userAgent,
+                IpAddress = ip,
 
-                OperatingSystem = null,
-                Browser = null,
+
+
+                Browser = browser,     // by  UAParser
+                OperatingSystem = os, // by UAParser
 
                 CreatedAtUtc = DateTime.UtcNow,
                 LastActivityAtUtc = DateTime.UtcNow
@@ -599,7 +743,73 @@ namespace E_Commerce.Infrastructure.Identity.Services
 
             return await IssueTokensAsync(user, session, null, ct);
         }
+
+
+        private async Task RevokeAllUserTokensAsync(
+    Guid userId,
+    RefreshTokenRevocationReason reason,
+    CancellationToken ct)
+        {
+            var ip = _httpContextAccessor.HttpContext?
+                .Connection
+                .RemoteIpAddress?
+                .ToString();
+
+            var sessions = await _context.UserSessions
+                .Include(x => x.RefreshTokens)
+                .Where(x => x.UserId == userId && !x.IsRevoked)
+                .ToListAsync(ct);
+
+            var now = DateTime.UtcNow;
+
+            foreach (var session in sessions)
+            {
+                session.IsRevoked = true;
+                session.RevokedAtUtc = now;
+
+                foreach (var token in session.RefreshTokens.Where(x => x.IsActive))
+                {
+                    token.RevokedAtUtc = now;
+                    token.RevokedByIp = ip;
+                    token.RevocationReason = reason;
+                }
+            }
+
+            await _context.SaveChangesAsync(ct);
+
+
+        }
+
+
+        private async Task LogSecurityEventAsync(
+    Guid userId,
+    UserSecurityEventType eventType,
+    string? details,
+    CancellationToken ct = default)
+        {
+            var ip = _httpContextAccessor.HttpContext?
+                .Connection
+                .RemoteIpAddress?
+                .ToString();
+
+            var securityEvent = new UserSecurityEvent
+            {
+                Id = Guid.NewGuid(),
+                UserId = userId,
+                EventType = eventType,
+                Details = details,
+                IpAddress = ip,
+                OccurredAtUtc = DateTime.UtcNow
+            };
+
+            _context.UserSecurityEvents.Add(securityEvent);
+
+            await _context.SaveChangesAsync(ct);
+        }
+
     }
+
+
 
 
 
@@ -615,5 +825,9 @@ namespace E_Commerce.Infrastructure.Identity.Services
             return Convert.ToHexString(hash);
         }
     }
+
+
+
+
 }
 

@@ -1,7 +1,19 @@
 ﻿
 
+using E_Commerce.Infrastructure.Identity.Services;
+
 namespace E_Commerce.Infrastructure.Identity.Identity_Entites
 {
+    public enum RefreshTokenRevocationReason
+    {
+        Logout,
+        Rotated,
+        PasswordChanged,
+        PasswordReset,
+        UserDisabled,
+        RefreshTokenReuseDetected,
+        AdminRevoked
+    }
     public class RefreshTokenEntity
     {
         public Guid Id { get; set; }
@@ -21,7 +33,7 @@ namespace E_Commerce.Infrastructure.Identity.Identity_Entites
         public DateTime ExpiresAtUtc { get; set; }
 
         public DateTime? RevokedAtUtc { get; set; }
-        public string? RevocationReason { get; set; }
+        public RefreshTokenRevocationReason? RevocationReason { get; set; }
 
         public string? CreatedByIp { get; set; }
 

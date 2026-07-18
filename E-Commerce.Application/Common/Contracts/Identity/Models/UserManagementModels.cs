@@ -29,19 +29,21 @@ namespace E_Commerce.Application.Common.Contracts.Identity.Models
         public bool HasNextPage => PageNumber < TotalPages;
     }
 
-    public class PaginationRequest
-    {
-        private int _pageSize = 20;
-        private const int MaxPageSize = 100;
+public class PaginationRequest
+{
+    private const int MaxPageSize = 100;
+    private int _pageSize = 20;
 
-        public int PageNumber { get; set; } = 1;
-        public int PageSize
-        {
-            get => _pageSize;
-            set => _pageSize = value > MaxPageSize ? MaxPageSize : value;
-        }
-        public string? SearchTerm { get; set; }
+    public int PageNumber { get; set; } = 1;
+
+    public int PageSize
+    {
+        get => _pageSize;
+        set => _pageSize = Math.Clamp(value, 1, MaxPageSize);
     }
+
+    public string? SearchTerm { get; set; }
+}
     /// <summary>
     /// Request model for updating user information.
     /// </summary>

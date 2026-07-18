@@ -1,6 +1,4 @@
-﻿using E_Commerce.Application.Features.Product.CreateProduct;
-using E_Commerce.Application.Features.Product.GetAllProducts;
-using E_Commerce.Application.Features.Product.GetProductById;
+﻿using E_Commerce.Application.Features.Cataglog.Product.Commands.CreateProduct;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 

@@ -1,3 +1,4 @@
+using E_Commerce.API.Middleware;
 using E_Commerce.Application;
 using E_Commerce.Infrastructure;
 using E_Commerce.Infrastructure.Identity;
@@ -52,6 +53,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+app.UseMiddleware<GlobalExceptionMiddleware>();
 
 app.UseAuthentication();
 app.UseAuthorization();

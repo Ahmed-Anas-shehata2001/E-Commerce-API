@@ -9,6 +9,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using SendGrid;
+using UAParser;
 
 namespace E_Commerce.Infrastructure
 {
@@ -59,6 +60,9 @@ namespace E_Commerce.Infrastructure
 
             // register HttpContext Accessor
             services.AddHttpContextAccessor();
+
+            // register UAParser
+            services.AddSingleton(Parser.GetDefault());
 
 
             return services;

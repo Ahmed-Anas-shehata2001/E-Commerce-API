@@ -1,20 +1,42 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace E_Commerce.Domain.Common.Base
+﻿public abstract class BaseEntity
 {
-    public class BaseEntity
+    public Guid Id { get; protected set; }
+
+    // Auditing and soft delete
+    public DateTime CreatedAtUtc { get; protected set; } = DateTime.UtcNow;
+
+    public DateTime? UpdatedAtUtc { get; protected set; }
+
+    public string? CreatedBy { get; protected set; }
+
+    public string? UpdatedBy { get; protected set; }
+    public byte[]? RowVersion { get; set; }     // optimistic concurrency
+
+
+    public DateTime? DeletedAtUtc { get; protected set; }
+
+    public string? DeletedBy { get; protected set; }
+
+    public bool IsDeleted => DeletedAtUtc.HasValue;
+
+    public void MarkAsDeleted(string deletedBy)
     {
-        public Guid Id { get; set; }
+        if (IsDeleted)
+            return;
 
-        public byte[] RowVersion { get; set; } // For optimistic concurrency control
-        public DateTime CreatedAt { get; set; } = DateTime.Now;
-        public DateTime? UpdatedAt { get; set; }
+        DeletedAtUtc = DateTime.UtcNow;
+        DeletedBy = deletedBy;
+    }
 
+    public void Restore()
+    {
+        DeletedAtUtc = null;
+        DeletedBy = null;
+    }
 
+    protected void MarkAsUpdated(string updatedBy)
+    {
+        UpdatedAtUtc = DateTime.UtcNow;
+        UpdatedBy = updatedBy;
     }
 }

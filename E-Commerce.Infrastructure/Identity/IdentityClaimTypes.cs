@@ -1,13 +1,17 @@
-namespace E_Commerce.Infrastructure.Identity
+namespace E_Commerce.Infrastructure.Identity;
+
+/// <summary>
+/// Defines custom claim types used throughout the application.
+/// </summary>
+public static class IdentityClaimTypes
 {
     /// <summary>
-    /// Defines claim type constants used for identity and authorization.
+    /// Represents a permission assigned to the authenticated user.
     /// </summary>
- public static class IdentityClaimTypes
-    {
-        /// <summary>
-        /// Claim type for permissions in roles.
-        /// </summary>
-        public const string Permission = "permission";
-    }
+    public const string Permission = "permission";
+
+    /// <summary>
+    /// Represents the current authenticated session.
+    /// </summary>
+    public const string SessionId = "session_id";
 }

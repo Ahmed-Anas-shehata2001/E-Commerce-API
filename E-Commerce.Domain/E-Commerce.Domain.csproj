@@ -7,14 +7,4 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
-  <ItemGroup>
-	  <Folder Include="Features\CategoryFeature\Errors\" />
-	  <Folder Include="Features\CategoryFeature\Events\" />
-	  <Folder Include="Features\CategoryFeature\ValueObjects\" />
-	  <Folder Include="Features\ProductFeature\Events\" />
-	  <Folder Include="Features\ProductFeature\ValueObjects\" />
-
- 
-  </ItemGroup>
-
 </Project>

@@ -7,7 +7,7 @@ namespace E_Commerce.Application.Features.Identity.Authentication
     /// Command to change user's password.
     /// </summary>
   public record ChangePasswordCommand(
-    string UserId,
+    Guid UserId,
    string CurrentPassword,
         string NewPassword,
    string ConfirmNewPassword

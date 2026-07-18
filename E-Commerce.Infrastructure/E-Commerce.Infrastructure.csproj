@@ -13,7 +13,6 @@
     <Folder Include="Identity\Autherization\Handler\" />
     <Folder Include="Identity\Autherization\Policies\" />
     <Folder Include="Services\" />
-    <Folder Include="Persistence\Repositories\" />
   </ItemGroup>
 
   <ItemGroup>
@@ -34,6 +33,7 @@
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
     <PackageReference Include="SendGrid" Version="9.29.3" />
+    <PackageReference Include="UAParser" Version="3.1.47" />
   </ItemGroup>
 
 </Project>

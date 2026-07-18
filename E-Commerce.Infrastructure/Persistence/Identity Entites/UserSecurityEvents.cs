@@ -1,37 +1,40 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace E_Commerce.Infrastructure.Identity.Identity_Entites.UserSecurityEvents
+﻿namespace E_Commerce.Infrastructure.Identity.Identity_Entites.UserSecurityEvents
 {
-
-    public enum SecurityEventType
+    //Yes. That's actually a very common design for an audit/security log table. Its purpose is to record security-related actions that occur on a user's account.
+    public enum UserSecurityEventType
     {
-        PasswordChanged = 1,
-
-        EmailChanged,
-
-        EmailConfirmed,
-
-        PhoneChanged,
-
-        PhoneConfirmed,
 
         LoginSucceeded,
-
         LoginFailed,
+        Logout,
+
+        RefreshTokenIssued,
+        RefreshTokenRotated,
+        RefreshTokenRevoked,
+        RefreshTokenReuseDetected,
+
+        PasswordChanged,
+        PasswordResetRequested,
+        PasswordReset,
+
+        EmailConfirmed,
+        EmailChanged,
+
+        PhoneChanged,
+        PhoneConfirmed,
 
         TwoFactorEnabled,
-
         TwoFactorDisabled,
+        TwoFactorSucceeded,
+        TwoFactorFailed,
+
+        ExternalLoginSucceeded,
+        ExternalLoginFailed,
 
         AccountLocked,
-
-        AccountUnlocked,
-
-        RefreshTokenRevoked,
+        AccountUnLocked,
+        UserDisabled,
+        UserEnabled,
 
         UserDeleted
     }
@@ -43,7 +46,7 @@ namespace E_Commerce.Infrastructure.Identity.Identity_Entites.UserSecurityEvents
 
         public ApplicationUser User { get; set; } = default!;
 
-        public SecurityEventType EventType { get; set; }
+        public UserSecurityEventType EventType { get; set; }
 
         public string? Details { get; set; }
 

@@ -1,6 +1,6 @@
 ﻿using E_Commerce.Domain.Common.Interfaces;
-using E_Commerce.Domain.Features.CategoryFeature.Interfaces;
-using E_Commerce.Domain.Features.ProductFeature.Interfaces;
+using E_Commerce.Domain.Features.Catalog.CategoryFeature.Interfaces;
+using E_Commerce.Domain.Features.Catalog.ProductFeature.Interfaces;
 using E_Commerce.Infrastructure.Persistence.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
