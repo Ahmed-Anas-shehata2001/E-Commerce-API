@@ -1,11 +1,7 @@
 ﻿using E_Commerce.Application.Features.Cataglog.Category.DTO;
-using E_Commerce.Domain.Features.Catalog.Enums;
+using E_Commerce.Domain.Features.Catalog.ProductFeature.Entities;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
 
 namespace E_Commerce.Infrastructure.Persistence.Repositories
 {

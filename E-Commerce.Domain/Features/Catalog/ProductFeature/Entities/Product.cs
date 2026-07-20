@@ -1,11 +1,17 @@
 ﻿
 using E_Commerce.Domain.Features.Catalog.BrandFeature.Entities;
 using E_Commerce.Domain.Features.Catalog.CategoryFeature.Entities;
-using E_Commerce.Domain.Features.Catalog.Enums;
 using E_Commerce.Domain.Features.Catalog.Exceptions;
 using E_Commerce.Domain.Features.Catalog.ReviewFeature.Entities;
 
 namespace E_Commerce.Domain.Features.Catalog.ProductFeature.Entities;
+
+public enum ProductStatus
+{
+    
+    Published ,
+    Archived  
+}
 
 public sealed class Product : BaseEntity
 {
@@ -28,7 +34,7 @@ public sealed class Product : BaseEntity
 
     public Guid SellerId { get; private set; }
 
-    public ProductStatus Status { get; private set; } = ProductStatus.Draft;
+    public ProductStatus Status { get; private set; } = ProductStatus.Published;
 
     public decimal? DiscountPercentage { get; private set; }
 
@@ -150,30 +156,6 @@ public sealed class Product : BaseEntity
         Stock = newStock;
     }
 
-    public void Publish()
-{
-    if (Status == ProductStatus.Published)
-        throw new ProductAlreadyPublishedException();
-
-    if (Stock <= 0)
-        throw new ProductOutOfStockException();
-
-    if (Price <= 0)
-        throw new InvalidPriceException();
-
-    Status = ProductStatus.Published;
-        Touch();
-}
-
-    public void Unpublish()
-    {
-        if (Status == ProductStatus.Draft)
-            throw new ProductAreadyDraftException();
-
-        Status = ProductStatus.Draft;
-        Touch();
-       
-    }
 
     public void Archive()
     {
@@ -181,8 +163,6 @@ public sealed class Product : BaseEntity
             throw new ProductAlreadyArchivedException();
 
         Status = ProductStatus.Archived;
-        Touch();
-      
     }
 
     public void UnArchive()
@@ -190,8 +170,7 @@ public sealed class Product : BaseEntity
         if (Status != ProductStatus.Archived)
             throw new ProductNotArchivedException();
 
-        Status = ProductStatus.Draft;
-        Touch();
+        Status = ProductStatus.Published;
     }
 
     public bool IsInStock() => Stock > 0;
@@ -225,8 +204,5 @@ public sealed class Product : BaseEntity
         DiscountEndDateUtc = null;
     }
 
-    private void Touch()
-    {
-        UpdatedAtUtc = DateTime.UtcNow;
-    }
+
 }

@@ -1,6 +1,6 @@
-﻿using E_Commerce.Domain.Features.Catalog.BrandFeature.Entities;
+﻿using E_Commerce.Application.Common.Contracts.Identity;
+using E_Commerce.Domain.Features.Catalog.BrandFeature.Entities;
 using E_Commerce.Domain.Features.Catalog.CategoryFeature.Entities;
-using E_Commerce.Domain.Features.Catalog.Enums;
 using E_Commerce.Domain.Features.Catalog.ProductFeature.Entities;
 using E_Commerce.Domain.Features.Catalog.ReviewFeature.Entities;
 using E_Commerce.Infrastructure.Identity;
@@ -14,8 +14,10 @@ namespace E_Commerce.Infrastructure.Persistence
 {
     public class ApplicationDbContext : IdentityDbContext<ApplicationUser, ApplicationRole, Guid>
     {
-        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
+        private readonly ICurrentUserService _currentUser;
+        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options, ICurrentUserService currentUser) : base(options)
         {
+            _currentUser = currentUser;
 
         }
 
@@ -44,6 +46,40 @@ namespace E_Commerce.Infrastructure.Persistence
 
 
         }
+
+        public override async Task<int> SaveChangesAsync(
+        CancellationToken cancellationToken = default)
+        {
+            var userId = _currentUser.UserId?.ToString() ?? "System";
+
+            foreach (var entry in ChangeTracker.Entries<BaseEntity>())
+            {
+                switch (entry.State)
+                {
+                    case EntityState.Added:
+                        entry.Property(e => e.CreatedAtUtc).CurrentValue = DateTime.UtcNow;
+                        entry.Property(e => e.CreatedBy).CurrentValue = userId;
+                        break;
+
+                    case EntityState.Modified:
+                        entry.Property(e => e.UpdatedAtUtc).CurrentValue = DateTime.UtcNow;
+                        entry.Property(e => e.UpdatedBy).CurrentValue = userId;
+                        break;
+
+                    case EntityState.Deleted:
+                        entry.State = EntityState.Modified;
+
+                        entry.Entity.MarkAsDeleted(userId);
+                        break;
+                }
+            }
+
+            return await base.SaveChangesAsync(cancellationToken);
+
+
+
+        }
+
     }
 
 
@@ -78,7 +114,7 @@ namespace E_Commerce.Infrastructure.Persistence
 
 
             builder.Property(c => c.Status)
-             .HasConversion<int>();
+             .HasConversion<string>();
 
             builder.HasQueryFilter(c => c.Status != CategoryStatus.Archived);
 
@@ -115,7 +151,7 @@ namespace E_Commerce.Infrastructure.Persistence
                 .HasColumnType("decimal(10,2)");
 
             builder.Property(p => p.Status)
-                .HasConversion<int>();
+                .HasConversion<string>();
 
             builder.Property(p => p.RowVersion)
                 .IsRowVersion();
@@ -160,7 +196,7 @@ namespace E_Commerce.Infrastructure.Persistence
                 .HasMaxLength(1000);
 
             builder.Property(b => b.Status)
-                .HasConversion<int>();
+                .HasConversion<string>();
 
             builder.Property(b => b.RowVersion)
                 .IsRowVersion();

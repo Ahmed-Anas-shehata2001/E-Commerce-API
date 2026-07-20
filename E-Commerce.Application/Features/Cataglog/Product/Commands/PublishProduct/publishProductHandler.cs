@@ -30,7 +30,7 @@ public sealed class PublishProductCommandHandler
         if (product is null)
             throw new ProductNotFoundException(request.ProductId);
 
-        product.Publish();
+        product.UnArchive();
 
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 

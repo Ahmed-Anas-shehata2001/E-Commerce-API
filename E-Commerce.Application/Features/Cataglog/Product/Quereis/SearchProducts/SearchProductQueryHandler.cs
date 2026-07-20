@@ -1,4 +1,5 @@
-﻿using E_Commerce.Application.Features.Cataglog.Product;
+﻿using E_Commerce.Application.Common.Contracts.Identity.Models;
+using E_Commerce.Application.Features.Cataglog.Product;
 using E_Commerce.Application.Features.Cataglog.Product.Quereis.SearchProducts;
 using MediatR;
 

@@ -29,6 +29,7 @@ builder.Services.AddSwaggerGen();
 var app = builder.Build();
 
 
+
 // Seed identity into the database after startup
 using (var scope = app.Services.CreateScope())
 {

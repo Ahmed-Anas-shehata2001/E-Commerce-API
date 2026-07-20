@@ -23,21 +23,18 @@
     <Folder Include="Common\Contracts\Storage\" />
     <Folder Include="Common\Contracts\Payments\" />
     <Folder Include="Common\Mapping\" />
-    <Folder Include="Features\Cataglog\Product\Quereis\FilterProducts\" />
-    <Folder Include="Features\Cataglog\Product\Quereis\GetSellerProducts\" />
+    <Folder Include="Features\Admin\Reports %28 later %29\" />
     <Folder Include="Features\Cataglog\Product\Quereis\GetProductsByCategory\" />
     <Folder Include="Features\Cataglog\Product\Quereis\GetRelatedProducts\" />
-    <Folder Include="Features\Cataglog\Product\Quereis\GetFeaturedProducts\" />
     <Folder Include="Features\Identity\Authentication\Enable2FA\" />
     <Folder Include="Features\Identity\Authentication\ExternalLogin\" />
     <Folder Include="Features\Identity\Authentication\ResendVerfication\" />
     <Folder Include="Features\Identity\Authentication\VerifyEmail\" />
     <Folder Include="Features\Identity\Authentication\RevokeToken\" />
-    <Folder Include="Features\Identity\Permissions\GetAllPermissions\" />
-    <Folder Include="Features\Identity\Users\Commands\BanUser\" />
-    <Folder Include="Features\Identity\Users\Commands\UnbanUser\" />
-    <Folder Include="Features\Identity\Users\Commands\UpdateProfile\" />
-    <Folder Include="Features\Identity\Users\Commands\UploadAvatar\" />
+    <Folder Include="Features\Admin\Users\Commands\BanUser\" />
+    <Folder Include="Features\Admin\Users\Commands\UnbanUser\" />
+    <Folder Include="Features\Admin\Users\Commands\UpdateProfile\" />
+    <Folder Include="Features\Admin\Users\Commands\UploadAvatar\" />
   </ItemGroup>
 
 </Project>

@@ -27,7 +27,7 @@ public sealed class UnpublishProductCommandHandler
         var product = await _products.GetProductByIdAsync(request.ProductId, ct)
             ?? throw new ProductNotFoundException(request.ProductId);
 
-        product.Unpublish();
+        product.Archive();
 
         await _unitOfWork.SaveChangesAsync(ct);
 

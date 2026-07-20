@@ -1,5 +1,6 @@
-﻿using E_Commerce.Application.Features.Cataglog.Product.Quereis.SearchProducts;
-using E_Commerce.Domain.Features.Catalog.Enums;
+﻿using E_Commerce.Application.Common.Contracts.Identity.Models;
+using E_Commerce.Application.Features.Cataglog.Product.Quereis.SearchProducts;
+using E_Commerce.Domain.Features.Catalog.ProductFeature.Entities;
 using MediatR;
 
 public enum ProductSortBy

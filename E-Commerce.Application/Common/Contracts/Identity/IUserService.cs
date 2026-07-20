@@ -1,4 +1,6 @@
 ﻿using E_Commerce.Application.Common.Contracts.Identity.Models;
+using E_Commerce.Application.Features.Admin.Sellers.Queries.GetSellers;
+using E_Commerce.Application.Features.Admin.Sellers.Queries.GetSellerStatisitics;
 using E_Commerce.Domain.Common.Result;
 
 
@@ -32,5 +34,11 @@ namespace E_Commerce.Application.Common.Contracts.Identity
         Task<Result<IReadOnlyList<string>>> GetUserRolesAsync(Guid userId, CancellationToken ct = default);
         Task<Result> UpdateUserRolesAsync(UpdateUserRolesRequest request, CancellationToken ct = default);
         Task<Result<IReadOnlyList<string>>> GetUserPermissionsAsync(Guid userId, CancellationToken ct = default);
+
+        // seller 
+        Task<PagedResult<SellerDto>> GetSellersAsync(int pageNumber, int pageSize, CancellationToken ct);
+        Task<Result<SellerDto>> GetSellerByIdAsync(Guid sellerId, CancellationToken ct);
+        Task<Result<SellerStatisticsDto>> GetSellerStatisticsAsync(Guid sellerId, CancellationToken ct);
+
     }
 }

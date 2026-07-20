@@ -1,4 +1,5 @@
-﻿using E_Commerce.Application.Features.Cataglog.Product;
+﻿using E_Commerce.Application.Common.Contracts.Identity.Models;
+using E_Commerce.Application.Features.Cataglog.Product;
 using E_Commerce.Application.Features.Cataglog.Product.Quereis.SearchProducts;
 using E_Commerce.Application.Features.Catalog.DTOs;
 using E_Commerce.Domain.Features.Catalog.ProductFeature.Entities;
@@ -88,11 +89,14 @@ public sealed class ProductReadRepository : IProductReadRepository
                 p.Brand.Name))
             .ToListAsync(ct);
 
-        return new PagedResult<ProductSearchResponse>(
-            items,
-            totalCount,
-            filter.PageNumber,
-            filter.PageSize);
+        return new PagedResult<ProductSearchResponse>()
+        {
+            Items = items,
+            TotalCount = totalCount,
+            PageNumber = filter.PageNumber,
+            PageSize = filter.PageSize,
+
+        };
     }
 
     public async Task<List<ProductDto>> GetProductsByBrandAsync(
@@ -113,13 +117,55 @@ public sealed class ProductReadRepository : IProductReadRepository
                 CategoryId = p.CategoryId,
                 CategoryName = p.Category.Name,
                 CreatedAtUTC = p.CreatedAtUtc,
-                UpdatedAtUTC = p.UpdatedAtUtc ,
+                UpdatedAtUTC = p.UpdatedAtUtc,
                 SKU = p.SKU,
                 BrandName = p.Brand.Name,
-                
+
             })
             .ToListAsync(cancellationToken);
     }
 
+
+    public async Task<PagedResult<ProductSearchResponse>> GetSellerProductsAsync(
+    Guid sellerId,
+    int pageNumber,
+    int pageSize,
+    CancellationToken ct)
+    {
+        var query = _context.Products
+            .AsNoTracking()
+            .Where(p => p.SellerId == sellerId)
+            .Include(p => p.Category)
+            .Include(p => p.Brand);
+
+        var totalCount = await query.CountAsync(ct);
+
+        var items = await query
+            .OrderBy(p => p.Name)
+            .Skip((pageNumber - 1) * pageSize)
+            .Take(pageSize)
+            .Select(p => new ProductSearchResponse(
+                p.Id,
+                p.Name,
+                p.SKU,
+                p.Price,
+                p.CurrentPrice,
+                p.Stock,
+                p.Status,
+                p.CategoryId,
+                p.Category.Name,
+                p.BrandId,
+                p.Brand.Name))
+            .ToListAsync(ct);
+
+        return new PagedResult<ProductSearchResponse>
+        {
+            Items = items,
+            TotalCount = totalCount,
+            PageNumber = pageNumber,
+            PageSize = pageSize,
+        };
+
+    }
 
 }

@@ -1,5 +1,6 @@
-﻿using E_Commerce.Domain.Features.Catalog.Enums;
+﻿
 
+using E_Commerce.Domain.Features.Catalog.ProductFeature.Entities;
 
 namespace E_Commerce.Application.Features.Cataglog.Product.Quereis.SearchProducts
 {
@@ -15,9 +16,5 @@ namespace E_Commerce.Application.Features.Cataglog.Product.Quereis.SearchProduct
     Guid CategoryId,
     Guid BrandId);
 
-    public sealed record PagedResult<T>(
-        IReadOnlyList<T> Items,
-        int TotalCount,
-        int PageNumber,
-        int PageSize);
+
 }

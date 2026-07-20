@@ -1,4 +1,5 @@
-﻿using E_Commerce.Domain.Features.Catalog.Enums;
+﻿
+using E_Commerce.Domain.Features.Catalog.ProductFeature.Entities;
 
 namespace E_Commerce.Application.Features.Cataglog.Product.Quereis.SearchProducts;
 

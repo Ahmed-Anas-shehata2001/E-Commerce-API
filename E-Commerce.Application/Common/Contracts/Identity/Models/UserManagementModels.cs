@@ -29,7 +29,8 @@ namespace E_Commerce.Application.Common.Contracts.Identity.Models
         public bool HasNextPage => PageNumber < TotalPages;
     }
 
-public class PaginationRequest
+
+    public class PaginationRequest
 {
     private const int MaxPageSize = 100;
     private int _pageSize = 20;

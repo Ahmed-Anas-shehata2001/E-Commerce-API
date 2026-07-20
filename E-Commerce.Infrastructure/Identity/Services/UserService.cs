@@ -1,11 +1,16 @@
 ﻿using E_Commerce.Application.Common.Contracts.Identity;
 using E_Commerce.Application.Common.Contracts.Identity.Models;
+using E_Commerce.Application.Features.Admin.Sellers.Queries.GetSellers;
+using E_Commerce.Application.Features.Admin.Sellers.Queries.GetSellerStatisitics;
 using E_Commerce.Domain.Common.Errors;
 using E_Commerce.Domain.Common.Result;
+using E_Commerce.Domain.Features.Catalog.ProductFeature.Entities;
 using E_Commerce.Infrastructure.Identity.Autherization;
+using E_Commerce.Infrastructure.Persistence;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using SendGrid.Helpers.Mail;
 
 namespace E_Commerce.Infrastructure.Identity.Services
 {
@@ -14,15 +19,17 @@ namespace E_Commerce.Infrastructure.Identity.Services
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly RoleManager<ApplicationRole> _roleManager;
         private readonly ILogger<UserService> _logger;
+        private readonly ApplicationDbContext _context;
 
         public UserService(
             UserManager<ApplicationUser> userManager,
             RoleManager<ApplicationRole> roleManager,
-            ILogger<UserService> logger)
+            ILogger<UserService> logger , ApplicationDbContext context)
         {
             _userManager = userManager;
             _roleManager = roleManager;
             _logger = logger;
+            _context = context;
         }
 
         public async Task<Result<UserInfo>> GetUserByIdAsync(Guid userId, CancellationToken ct = default)
@@ -248,6 +255,137 @@ namespace E_Commerce.Infrastructure.Identity.Services
             var permissions = await GetPermissionsForUserAsync(user);
             return Result<IReadOnlyList<string>>.Success(permissions);
         }
+
+
+
+
+
+
+
+        // seller
+        public async Task<PagedResult<SellerDto>> GetSellersAsync(
+    int pageNumber,
+    int pageSize,
+    CancellationToken ct = default)
+        {
+            var sellerRoleId = await _roleManager.Roles
+                .Where(r => r.Name == "Seller")
+                .Select(r => r.Id)
+                .FirstOrDefaultAsync(ct);
+
+            if (sellerRoleId == Guid.Empty)
+            {
+                return new PagedResult<SellerDto>
+                {
+                    Items = [],
+                    PageNumber = pageNumber,
+                    PageSize = pageSize,
+                    TotalCount = 0
+                };
+            }
+
+            var query =
+                from user in _userManager.Users.AsNoTracking()
+                join userRole in _context.UserRoles
+                    on user.Id equals userRole.UserId
+                where userRole.RoleId == sellerRoleId
+                orderby user.UserName
+                select new SellerDto
+                {
+                    Id = user.Id,
+                    UserName = user.UserName!,
+                    Email = user.Email!,
+                    FirstName = user.FirstName,
+                    LastName = user.LastName,
+                    IsActive = user.IsActive,
+                    IsDeleted = user.IsDeleted,
+                    CreatedAt = user.CreatedAt
+                };
+
+            var totalCount = await query.CountAsync(ct);
+
+            var sellers = await query
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync(ct);
+
+            return new PagedResult<SellerDto>
+            {
+                Items = sellers,
+                PageNumber = pageNumber,
+                PageSize = pageSize,
+                TotalCount = totalCount
+            };
+        }
+
+        public async Task<Result<SellerDto>> GetSellerByIdAsync(
+    Guid sellerId,
+    CancellationToken ct)
+        {
+            var user = await _userManager.Users
+                .AsNoTracking()
+                .FirstOrDefaultAsync(x => x.Id == sellerId, ct);
+
+            if (user is null)
+                return Result<SellerDto>.Failure(
+                    UserErrors.NotFound(sellerId));
+
+            var roles = await _userManager.GetRolesAsync(user);
+
+            if (!roles.Contains("Seller"))
+                return Result<SellerDto>.Failure("User is not a seller.");
+
+            return Result<SellerDto>.Success(new SellerDto
+            {
+                Id = user.Id,
+                UserName = user.UserName!,
+                Email = user.Email!,
+                FirstName = user.FirstName,
+                LastName = user.LastName,
+                IsActive = user.IsActive,
+                CreatedAt = user.CreatedAt
+            });
+        }
+
+        public async Task<Result<SellerStatisticsDto>> GetSellerStatisticsAsync(
+    Guid sellerId,
+    CancellationToken ct)
+        {
+            var seller = await _userManager.Users
+                .AsNoTracking()
+                .FirstOrDefaultAsync(x => x.Id == sellerId, ct);
+
+            if (seller is null)
+                return Result<SellerStatisticsDto>.Failure(
+                    UserErrors.NotFound(sellerId));
+
+            var products = await _context.Products
+                .Where(x => x.SellerId == sellerId)
+                .ToListAsync(ct);
+
+            var dto = new SellerStatisticsDto
+            {
+                SellerId = sellerId,
+
+                ProductsCount = products.Count,
+
+                PublishedProductsCount = products.Count(x =>
+                    x.Status == ProductStatus.Published),
+
+                ArchivedProductsCount = products.Count(x =>
+                    x.Status == ProductStatus.Archived),
+
+                TotalStock = products.Sum(x => x.Stock),
+
+                TotalInventoryValue = products.Sum(x =>
+                    x.Stock * x.Price)
+            };
+
+            return Result<SellerStatisticsDto>.Success(dto);
+        }
+
+
+
 
         // ---- private helpers ----
 
