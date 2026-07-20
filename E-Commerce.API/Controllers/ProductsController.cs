@@ -1,4 +1,5 @@
-﻿using E_Commerce.Application.Features.Cataglog.Product.Commands.CreateProduct;
+﻿using E_Commerce.Application.Features.Cataglog.Product.Quereis.GetProductById;
+using E_Commerce.Application.Features.Catalog.Commands.CreateProduct;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
@@ -22,31 +23,32 @@ namespace E_Commerce.API.Controllers
             return Ok(result);
         }
 
-        // get all products endpoint
+        [HttpGet("{id:guid}")]
+        public async Task<IActionResult> GetById(
+         Guid id,
+         CancellationToken cancellationToken)
+        {
+            var result = await _mediator.Send(
+                new GetProductByIdQuery(id),
+                cancellationToken);
+
+            if (result.IsFailure)
+                return NotFound(result);
+
+            return Ok(result);
+        }
+
         [HttpGet]
-        public async Task<IActionResult> GetAll()
+        public async Task<IActionResult> GetProducts(
+    [FromQuery] SearchProductsQuery query,
+    CancellationToken ct)
         {
-            var result = await _mediator.Send(new GetAllProductsQuery());
-
-            if (result == null || !result.Any())
-            {
-                return NotFound();
-            }
+            var result = await _mediator.Send(query, ct);
 
             return Ok(result);
         }
 
-        // get product by id endpoint
-        [HttpGet("{id}")]
-        public async Task<IActionResult> GetById(Guid id)
-        {
-            var result = await _mediator.Send(new GetProductByIdQuery(id));
-            if (result == null)
-            {
-                return NotFound();
-            }
-            return Ok(result);
-        }
+
 
 
     }

@@ -185,6 +185,15 @@ public sealed class Product : BaseEntity
       
     }
 
+    public void UnArchive()
+    {
+        if (Status != ProductStatus.Archived)
+            throw new ProductNotArchivedException();
+
+        Status = ProductStatus.Draft;
+        Touch();
+    }
+
     public bool IsInStock() => Stock > 0;
 
     public void ApplyDiscount(

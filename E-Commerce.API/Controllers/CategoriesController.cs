@@ -1,7 +1,12 @@
-﻿using E_Commerce.Application.Features.Cataglog.Category.CreateCategory;
-using E_Commerce.Application.Features.Cataglog.Category.UpdateProduct;
-using E_Commerce.Application.Features.CategoryFeature.GetAllProducts;
-using E_Commerce.Application.Features.CategoryFeature.GetCategoryById;
+﻿
+using E_Commerce.API.DTO;
+using E_Commerce.Application.Features.Cataglog.Category.GetCategories;
+using E_Commerce.Application.Features.Catalog.Categories.Commands.ArchiveCategory;
+using E_Commerce.Application.Features.Catalog.Categories.Commands.CreateCategory;
+using E_Commerce.Application.Features.Catalog.Categories.Commands.UnArchiveCategory;
+using E_Commerce.Application.Features.Catalog.Categories.Commands.UpdateCategory;
+using E_Commerce.Application.Features.Catalog.Categories.Queries.GetCategoryById;
+using E_Commerce.Application.Features.Catalog.Category.Queries.GetCategoryProducts;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
@@ -22,17 +27,28 @@ namespace E_Commerce.API.Controllers
 
         // create category endpoint
         [HttpPost]
-        public async Task<IActionResult> Create(CreateCategoryCommand command)
+        public async Task<IActionResult> Create(
+    CreateCategoryCommand command,
+    CancellationToken cancellationToken)
         {
-            var result = await _mediator.Send(command);
-            return Ok(result);
+            var id = await _mediator.Send(command, cancellationToken);
+
+            return CreatedAtAction(
+                nameof(GetById),
+                new { id },
+                id);
         }
 
-        // get all categories endpoint
+
+     
         [HttpGet]
-        public async Task<IActionResult> GetAll()
+        public async Task<IActionResult> GetCategories(
+      CancellationToken ct)
         {
-            var result = await _mediator.Send(new GetAllCategoriesQuery());
+            var result = await _mediator.Send(
+                new GetCategoriesQuery(),
+                ct);
+
             return Ok(result);
         }
 
@@ -46,16 +62,64 @@ namespace E_Commerce.API.Controllers
 
         // update category endpoint
 
-        [HttpPut("{id}")]
-        public async Task<IActionResult> Update(Guid id, UpdateCategoryCommand command)
+        [HttpPut("{id:guid}")]
+        public async Task<IActionResult> Update(
+         Guid id,
+         UpdateCategoryRequest request,
+         CancellationToken ct)
         {
-            var fixedCommand = new UpdateCategoryCommand(id, command.Name);
+            var command = new UpdateCategoryCommand(
+                id,
+                request.Name,
+                request.Description);
 
-            var result = await _mediator.Send(fixedCommand);
+            var result = await _mediator.Send(command, ct);
 
-            return result.IsFailure
-                ? NotFound(result.Error)
-                : NoContent();
+            if (result.IsFailure)
+                return BadRequest(result.Error);
+
+            return NoContent();
+        }
+
+        [HttpGet("{id:guid}/products")]
+        public async Task<IActionResult> GetProducts(
+    Guid id,
+    CancellationToken ct)
+        {
+            var result = await _mediator.Send(
+                new GetCategoryProductsQuery(id),
+                ct);
+
+            return Ok(result);
+        }
+
+
+        [HttpPatch("{id:guid}/archive")]
+        public async Task<IActionResult> Archive(
+    Guid id,
+    CancellationToken ct)
+        {
+            var result = await _mediator.Send(
+                new ArchiveCategoryCommand(id),
+                ct);
+
+            return result.IsSuccess
+                ? NoContent()
+                : NotFound(result);
+        }
+
+        [HttpPatch("{id:guid}/unarchive")]
+        public async Task<IActionResult> UnArchive(
+            Guid id,
+            CancellationToken ct)
+        {
+            var result = await _mediator.Send(
+                new UnArchiveCategoryCommand(id),
+                ct);
+
+            return result.IsSuccess
+                ? NoContent()
+                : NotFound(result);
         }
 
     }

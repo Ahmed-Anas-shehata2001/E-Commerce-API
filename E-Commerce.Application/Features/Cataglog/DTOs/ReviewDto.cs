@@ -5,10 +5,12 @@ public sealed record ReviewDto
     public Guid Id { get; init; }
 
     public Guid CustomerId { get; init; }
+    public Guid ProductId { get; init; }
 
     public int Rating { get; init; }
 
     public string? Comment { get; init; }
 
     public DateTime CreatedAtUtc { get; init; }
+    public DateTime? UpdatedAtUtc { get; set; }
 }

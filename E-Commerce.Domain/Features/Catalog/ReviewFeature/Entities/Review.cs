@@ -46,4 +46,12 @@ public sealed class Review : BaseEntity
     {
         Comment = comment?.Trim();
     }
+
+    public void Update(int rating, string? comment)
+    {
+        SetRating(rating);
+        SetComment(comment);
+
+        UpdatedAtUtc = DateTime.UtcNow;
+    }
 }

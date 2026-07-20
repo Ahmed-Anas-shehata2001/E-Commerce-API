@@ -23,16 +23,11 @@
     <Folder Include="Common\Contracts\Storage\" />
     <Folder Include="Common\Contracts\Payments\" />
     <Folder Include="Common\Mapping\" />
-    <Folder Include="Features\Cataglog\Product\Commands\FilterProducts\" />
-    <Folder Include="Features\Cataglog\Product\Commands\ApplyDiscount\" />
-    <Folder Include="Features\Cataglog\Product\Commands\ArchiveProduct\" />
-    <Folder Include="Features\Cataglog\Product\Commands\RemoveDiscount\" />
-    <Folder Include="Features\Cataglog\Product\Commands\SearchProducts\" />
+    <Folder Include="Features\Cataglog\Product\Quereis\FilterProducts\" />
     <Folder Include="Features\Cataglog\Product\Quereis\GetSellerProducts\" />
     <Folder Include="Features\Cataglog\Product\Quereis\GetProductsByCategory\" />
     <Folder Include="Features\Cataglog\Product\Quereis\GetRelatedProducts\" />
     <Folder Include="Features\Cataglog\Product\Quereis\GetFeaturedProducts\" />
-    <Folder Include="Features\Cataglog\Product\Quereis\SearchProducts\" />
     <Folder Include="Features\Identity\Authentication\Enable2FA\" />
     <Folder Include="Features\Identity\Authentication\ExternalLogin\" />
     <Folder Include="Features\Identity\Authentication\ResendVerfication\" />

@@ -1,15 +1,8 @@
 ﻿using MediatR;
 
+namespace E_Commerce.Application.Features.Catalog.Categories.Commands.CreateCategory;
 
-namespace E_Commerce.Application.Features.Cataglog.Category.CreateCategory
-{
-    public class CreateCategoryCommand : IRequest<Guid>
-    {
-        public string Name { get; set; }
-
-
-
-
-        
-    }
-}
+public sealed record CreateCategoryCommand(
+    string Name,
+    string? Description)
+    : IRequest<Guid>;

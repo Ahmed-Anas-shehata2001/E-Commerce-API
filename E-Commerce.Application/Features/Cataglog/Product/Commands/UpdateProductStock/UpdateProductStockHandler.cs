@@ -31,7 +31,7 @@ public sealed class UpdateProductStockCommandHandler
         if (product is null)
             throw new ProductNotFoundException(request.ProductId);
 
-        product.SetStock(request.NewStock);
+        product.AdjustStock(request.NewStock);
 
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 

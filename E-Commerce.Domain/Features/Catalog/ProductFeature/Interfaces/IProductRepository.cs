@@ -14,5 +14,8 @@ namespace E_Commerce.Domain.Features.Catalog.ProductFeature.Interfaces
 
         Task DeleteProduct(Product product);
 
+ 
+
+
     }
 }

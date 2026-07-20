@@ -1,10 +1,15 @@
-﻿namespace E_Commerce.Application.Features.Catalog.DTOs;
+﻿
 
-public sealed record CategoryDto
+namespace E_Commerce.Application.Features.Cataglog.Category.DTO
 {
-    public Guid Id { get; init; }
+    public class CategoryDto
+    {
+        public Guid Id { get; set; }
+        public string Name { get; set; }
+        public string Description { get; set; }
 
-    public string Name { get; init; } = default!;
+        public DateTime CreatedAt { get; set; }
+        public DateTime? UpdatedAt { get; set; }
 
-    public string? Description { get; init; }
+    }
 }

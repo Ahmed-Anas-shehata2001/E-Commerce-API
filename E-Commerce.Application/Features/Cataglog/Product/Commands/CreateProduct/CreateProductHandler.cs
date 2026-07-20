@@ -2,7 +2,6 @@
 using E_Commerce.Domain.Common.Interfaces;
 using E_Commerce.Domain.Features.Catalog.BrandFeature.Interfaces;
 using E_Commerce.Domain.Features.Catalog.CategoryFeature.Interfaces;
-using E_Commerce.Domain.Features.Catalog.ProductFeature.Entities;
 using E_Commerce.Domain.Features.Catalog.ProductFeature.Interfaces;
 using MediatR;
 
@@ -41,7 +40,7 @@ public sealed class CreateProductCommandHandler
         if (await _products.ProductSkuExistsAsync(request.SKU, cancellationToken))
             throw new DuplicateProductSkuException(request.SKU);
 
-        var product = new Product(
+        var product = new Domain.Features.Catalog.ProductFeature.Entities.Product(
             request.Name,
             request.SKU,
             request.Price,

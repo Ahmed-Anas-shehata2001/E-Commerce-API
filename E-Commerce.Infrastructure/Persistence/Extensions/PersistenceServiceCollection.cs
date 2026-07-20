@@ -1,15 +1,14 @@
-﻿using E_Commerce.Domain.Common.Interfaces;
+﻿using E_Commerce.Application.Features.Cataglog.Product;
+using E_Commerce.Application.Features.Catalog.Reviews;
+using E_Commerce.Domain.Common.Interfaces;
+using E_Commerce.Domain.Features.Catalog.BrandFeature.Interfaces;
 using E_Commerce.Domain.Features.Catalog.CategoryFeature.Interfaces;
 using E_Commerce.Domain.Features.Catalog.ProductFeature.Interfaces;
+using E_Commerce.Domain.Features.Catalog.ReviewFeature.Interfaces;
 using E_Commerce.Infrastructure.Persistence.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace E_Commerce.Infrastructure.Persistence.Extensions
 {
@@ -39,7 +38,12 @@ namespace E_Commerce.Infrastructure.Persistence.Extensions
 
             // register repositories
             services.AddScoped<IProductRepository, ProductRepository>();
+            services.AddScoped<IProductReadRepository, ProductReadRepository>();
             services.AddScoped<ICategoryRepository, CategoryRepository>();
+            services.AddScoped<ICategoryReadRepository, CategoryReadRepository>();
+            services.AddScoped<IBrandRepository, BrandRepository>();
+            services.AddScoped<IReviewRepository, ReviewRepository>();
+            services.AddScoped<IReviewReadRepository ,  ReviewReadRepository>();
 
             // register Unit of work
             services.AddScoped<IUnitOfWork, UnitOfWork>();

@@ -38,6 +38,7 @@ namespace E_Commerce.Infrastructure
             services.AddScoped<ICurrentUserService, CurrentUserService>();
 
 
+
             //services.AddScoped<IPermissionService, PermissionService>();
 
 

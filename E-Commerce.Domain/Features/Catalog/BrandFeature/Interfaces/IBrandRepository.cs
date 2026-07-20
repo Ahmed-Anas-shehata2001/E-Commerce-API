@@ -1,6 +1,8 @@
 ﻿
 namespace E_Commerce.Domain.Features.Catalog.BrandFeature.Interfaces;
 using E_Commerce.Domain.Features.Catalog.BrandFeature.Entities;
+using E_Commerce.Domain.Features.Catalog.ProductFeature.Entities;
+
 public interface IBrandRepository
 {
     Task AddBrandAsync(Brand brand, CancellationToken cancellationToken);
@@ -14,4 +16,6 @@ public interface IBrandRepository
     void DeleteBrand(Brand brand);
 
     Task<List<Brand>> GetBrandsAsync(CancellationToken cancellationToken);
+
+
 }

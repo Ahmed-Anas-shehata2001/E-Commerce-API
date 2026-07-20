@@ -1,9 +1,6 @@
 ﻿using E_Commerce.Domain.Common.Exceptions;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using E_Commerce.Domain.Features.Catalog.BrandFeature.Entities;
+using E_Commerce.Domain.Features.Catalog.CategoryFeature.Entities;
 
 namespace E_Commerce.Domain.Features.Catalog.Exceptions
 {
@@ -160,6 +157,15 @@ namespace E_Commerce.Domain.Features.Catalog.Exceptions
         }
     }
 
+    public sealed class ProductNotArchivedException : DomainException
+    {
+        public ProductNotArchivedException()
+            : base("product is not archived   .", "PRODUCT_NOT_ARCHIVED")
+        {
+        }
+    }
+
+
     public sealed class ProductAlreadyHasDiscountException : DomainException
     {
         public ProductAlreadyHasDiscountException()
@@ -176,8 +182,43 @@ namespace E_Commerce.Domain.Features.Catalog.Exceptions
         }
     }
 
+    public sealed class CategoryAlreadyArchivedException : DomainException
+    {
+        public CategoryAlreadyArchivedException()
+            : base("product has been aready archived  .", "CATEGORY_ARCHIVED")
+        {
+        }
+    }
 
-    
+    public sealed class CategoryAlreadyActiveException : DomainException
+    {
+        public CategoryAlreadyActiveException()
+            : base("product is active  .", "CATEGORY_ACTIVE")
+        {
+        }
+    }
+
+
+    public sealed class BrandAlreadyArchivedException : DomainException
+    {
+        public BrandAlreadyArchivedException()
+            : base("brand has been arhcived   .", "BRAND_ARCHIVED")
+        {
+        }
+    }
+
+
+    public sealed class BrandAlreadyActiveException : DomainException
+    {
+        public BrandAlreadyActiveException()
+            : base("brand is active  .", "BRAND_ACTIVE")
+        {
+        }
+    }
+
+
+
+
 
 
 

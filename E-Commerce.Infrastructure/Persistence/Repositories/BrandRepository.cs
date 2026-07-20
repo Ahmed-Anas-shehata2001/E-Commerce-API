@@ -1,5 +1,6 @@
 ﻿using E_Commerce.Domain.Features.Catalog.BrandFeature.Entities;
 using E_Commerce.Domain.Features.Catalog.BrandFeature.Interfaces;
+using E_Commerce.Domain.Features.Catalog.ProductFeature.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace E_Commerce.Infrastructure.Persistence.Repositories;
@@ -59,4 +60,6 @@ public sealed class BrandRepository : IBrandRepository
     {
         _context.Brands.Remove(brand);
     }
+
+ 
 }
