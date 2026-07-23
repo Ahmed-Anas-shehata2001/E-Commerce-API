@@ -23,8 +23,9 @@ public sealed class CreateCategoryCommandHandler
         CreateCategoryCommand request,
         CancellationToken cancellationToken)
     {
-        var exists = await _categoryRepository
-            .CategoryNameExistsAsync(request.Name, cancellationToken);
+        var exists = await _categoryRepository.CategoryNameExistsAsync(
+            request.Name,
+            cancellationToken);
 
         if (exists)
             throw new CategoryAlreadyExistsException(request.Name);

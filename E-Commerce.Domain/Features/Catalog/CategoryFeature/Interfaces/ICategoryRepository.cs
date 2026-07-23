@@ -12,7 +12,14 @@ public interface ICategoryRepository
 
     Task<bool> CategoryNameExistsAsync(string name, CancellationToken cancellationToken);
 
+    Task<bool> CategoryNameExistsAsync(string name, Guid excludeCategoryId, CancellationToken cancellationToken);
+
     void DeleteCategory(Category category);
 
     Task<List<Category>> GetCategoriesAsync(CancellationToken ct);
+
+
+    Task<Category?> GetCategoryByIdIgnoreQueryFiltersAsync(
+    Guid id,
+    CancellationToken cancellationToken);
 }

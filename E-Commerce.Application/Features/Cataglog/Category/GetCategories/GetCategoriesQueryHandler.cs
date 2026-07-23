@@ -27,8 +27,8 @@ public sealed class GetCategoriesQueryHandler
                 Id = c.Id,
                 Name = c.Name,
                 Description = c.Description,
-                CreatedAt = c.CreatedAtUtc,
-                UpdatedAt = c.UpdatedAtUtc
+                CreatedAtUtc = c.CreatedAtUtc,
+                UpdatedAtUtc = c.UpdatedAtUtc
             })
             .ToList();
     }

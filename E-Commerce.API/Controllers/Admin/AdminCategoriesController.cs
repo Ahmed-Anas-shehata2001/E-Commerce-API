@@ -48,10 +48,7 @@ public sealed class AdminCategoriesController : ControllerBase
             request.Name,
             request.Description);
 
-        var result = await _mediator.Send(command, ct);
-
-        if (result.IsFailure)
-            return BadRequest(result.Error);
+        await _mediator.Send(command, ct);
 
         return NoContent();
     }

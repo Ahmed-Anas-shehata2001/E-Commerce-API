@@ -1,19 +1,20 @@
 ﻿
+using E_Commerce.Domain.Common.Base;
+using E_Commerce.Domain.Common.Exceptions;
 using E_Commerce.Domain.Features.Catalog.BrandFeature.Entities;
 using E_Commerce.Domain.Features.Catalog.CategoryFeature.Entities;
-using E_Commerce.Domain.Features.Catalog.Exceptions;
 using E_Commerce.Domain.Features.Catalog.ReviewFeature.Entities;
 
 namespace E_Commerce.Domain.Features.Catalog.ProductFeature.Entities;
 
 public enum ProductStatus
 {
-    
-    Published ,
-    Archived  
+
+    Published,
+    Archived
 }
 
-public sealed class Product : BaseEntity
+public sealed class Product : SoftDeleteEntity
 {
     public string Name { get; private set; } = default!;
     public string? Description { get; private set; }

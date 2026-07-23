@@ -36,15 +36,20 @@ public sealed class CategoryRepository : ICategoryRepository
             .AnyAsync(c => c.Id == id, ct);
     }
 
-    public async Task<bool> CategoryNameExistsAsync(
-        string name,
-        CancellationToken ct)
-    {
-        name = name.Trim().ToUpperInvariant();
 
-        return await _context.Categories
-            .AnyAsync(c => c.Name == name, ct);
+
+
+
+    public Task<bool> CategoryNameExistsAsync(
+   string name,
+   CancellationToken cancellationToken)
+    {
+        return _context.Categories.AnyAsync(c =>
+            c.Name == name, cancellationToken);
     }
+
+
+
 
     public async Task<List<Category>> GetCategoriesAsync(
         CancellationToken ct)
@@ -59,4 +64,27 @@ public sealed class CategoryRepository : ICategoryRepository
     {
         _context.Categories.Remove(category);
     }
+
+    public Task<bool> CategoryNameExistsAsync(
+        string name,
+        Guid excludeCategoryId,
+        CancellationToken cancellationToken)
+    {
+        return _context.Categories.AnyAsync(
+            c => c.Name == name &&
+                 c.Id != excludeCategoryId,
+            cancellationToken);
+    }
+
+
+    public async Task<Category?> GetCategoryByIdIgnoreQueryFiltersAsync(
+    Guid id,
+    CancellationToken cancellationToken)
+    {
+        return await _context.Categories
+            .IgnoreQueryFilters()
+            .FirstOrDefaultAsync(c => c.Id == id, cancellationToken);
+    }
+
+
 }

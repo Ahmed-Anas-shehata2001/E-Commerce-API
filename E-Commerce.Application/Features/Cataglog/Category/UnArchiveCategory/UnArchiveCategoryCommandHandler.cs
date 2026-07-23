@@ -23,7 +23,7 @@ public sealed class UnArchiveCategoryCommandHandler
         UnArchiveCategoryCommand request,
         CancellationToken cancellationToken)
     {
-        var category = await _repository.GetCategoryByIdAsync(
+        var category = await _repository.GetCategoryByIdIgnoreQueryFiltersAsync(
             request.CategoryId,
             cancellationToken);
 

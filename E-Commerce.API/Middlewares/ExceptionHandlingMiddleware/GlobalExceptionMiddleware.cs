@@ -1,5 +1,5 @@
-﻿using System.Net;
-using E_Commerce.Domain.Common.Exceptions;
+﻿using E_Commerce.Application.Common.Exceptions.Base;
+using E_Commerce.Domain.Common.Exceptions.@base;
 
 namespace E_Commerce.API.Middleware;
 
@@ -36,11 +36,15 @@ public sealed class GlobalExceptionMiddleware
     {
         context.Response.ContentType = "application/json";
 
+
+
         var statusCode = exception switch
         {
             DomainException => StatusCodes.Status400BadRequest,
 
-            KeyNotFoundException => StatusCodes.Status404NotFound,
+            ConflictException => StatusCodes.Status409Conflict,
+
+            NotFoundException => StatusCodes.Status404NotFound,
 
             UnauthorizedAccessException => StatusCodes.Status401Unauthorized,
 

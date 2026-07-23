@@ -1,5 +1,5 @@
-﻿using E_Commerce.Domain.Features.Catalog.CategoryFeature.Entities;
-using E_Commerce.Domain.Features.Catalog.Exceptions;
+﻿using E_Commerce.Domain.Common.Base;
+using E_Commerce.Domain.Common.Exceptions;
 
 namespace E_Commerce.Domain.Features.Catalog.BrandFeature.Entities;
 
@@ -8,7 +8,7 @@ public enum BrandStatus
     Active,
     Archived
 }
-public class Brand : BaseEntity
+public class Brand : SoftDeleteEntity
 {
     public string Name { get; private set; } = default!;
 
@@ -68,8 +68,8 @@ public class Brand : BaseEntity
         Status = BrandStatus.Active;
         Touch();
     }
- 
- 
+
+
 
     private void Touch()
     {

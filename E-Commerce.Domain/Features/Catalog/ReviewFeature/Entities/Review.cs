@@ -1,9 +1,9 @@
 ﻿using E_Commerce.Domain.Common.Base;
-using E_Commerce.Domain.Features.Catalog.Exceptions;
+using E_Commerce.Domain.Common.Exceptions;
 
 namespace E_Commerce.Domain.Features.Catalog.ReviewFeature.Entities;
 
-public sealed class Review : BaseEntity
+public sealed class Review : AuditableEntity
 {
     public Guid ProductId { get; private set; }
 

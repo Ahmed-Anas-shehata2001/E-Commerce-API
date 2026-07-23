@@ -1,10 +1,12 @@
 ﻿using E_Commerce.Application.Features.Cataglog.Product;
 using E_Commerce.Application.Features.Catalog.Reviews;
 using E_Commerce.Domain.Common.Interfaces;
+using E_Commerce.Domain.Features.Cart_Feature;
 using E_Commerce.Domain.Features.Catalog.BrandFeature.Interfaces;
 using E_Commerce.Domain.Features.Catalog.CategoryFeature.Interfaces;
 using E_Commerce.Domain.Features.Catalog.ProductFeature.Interfaces;
 using E_Commerce.Domain.Features.Catalog.ReviewFeature.Interfaces;
+using E_Commerce.Domain.Features.WishlistFeature.Interfaces;
 using E_Commerce.Infrastructure.Persistence.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -44,6 +46,8 @@ namespace E_Commerce.Infrastructure.Persistence.Extensions
             services.AddScoped<IBrandRepository, BrandRepository>();
             services.AddScoped<IReviewRepository, ReviewRepository>();
             services.AddScoped<IReviewReadRepository ,  ReviewReadRepository>();
+            services.AddScoped<IWishlistRepository, WishlistRepository>();
+            services.AddScoped<ICartRepository, CartRepository>();
 
             // register Unit of work
             services.AddScoped<IUnitOfWork, UnitOfWork>();

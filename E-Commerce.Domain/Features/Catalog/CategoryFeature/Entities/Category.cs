@@ -1,6 +1,8 @@
 ﻿
 
-using E_Commerce.Domain.Features.Catalog.Exceptions;
+
+using E_Commerce.Domain.Common.Base;
+using E_Commerce.Domain.Common.Exceptions;
 
 namespace E_Commerce.Domain.Features.Catalog.CategoryFeature.Entities;
 
@@ -10,7 +12,7 @@ public enum CategoryStatus
     Archived = 2
 }
 
-public sealed class Category : BaseEntity
+public sealed class Category : SoftDeleteEntity
 {
     public string Name { get; private set; } = default!;
 

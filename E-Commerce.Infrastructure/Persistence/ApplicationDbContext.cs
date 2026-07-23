@@ -1,8 +1,11 @@
 ﻿using E_Commerce.Application.Common.Contracts.Identity;
+using E_Commerce.Domain.Common.Base;
+using E_Commerce.Domain.Features.CartFeature.Entities;
 using E_Commerce.Domain.Features.Catalog.BrandFeature.Entities;
 using E_Commerce.Domain.Features.Catalog.CategoryFeature.Entities;
 using E_Commerce.Domain.Features.Catalog.ProductFeature.Entities;
 using E_Commerce.Domain.Features.Catalog.ReviewFeature.Entities;
+using E_Commerce.Domain.Features.WishlistFeature.Entities;
 using E_Commerce.Infrastructure.Identity;
 using E_Commerce.Infrastructure.Identity.Identity_Entites;
 using E_Commerce.Infrastructure.Identity.Identity_Entites.UserSecurityEvents;
@@ -35,6 +38,16 @@ namespace E_Commerce.Infrastructure.Persistence
         public DbSet<Review> Reviews => Set<Review>();
 
 
+        // wishlist
+        public DbSet<Wishlist> Wishlists => Set<Wishlist>();
+        public DbSet<WishlistItem> WishlistItems => Set<WishlistItem>();
+
+        // cart
+        public DbSet<Cart> Carts => Set<Cart>();
+        public DbSet<CartItem> CartItems => Set<CartItem>();
+
+
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);  //     // Configure Identity tables (AspNetUsers, AspNetRoles, etc.)
@@ -52,7 +65,8 @@ namespace E_Commerce.Infrastructure.Persistence
         {
             var userId = _currentUser.UserId?.ToString() ?? "System";
 
-            foreach (var entry in ChangeTracker.Entries<BaseEntity>())
+            // Auditing
+            foreach (var entry in ChangeTracker.Entries<AuditableEntity>())
             {
                 switch (entry.State)
                 {
@@ -66,11 +80,16 @@ namespace E_Commerce.Infrastructure.Persistence
                         entry.Property(e => e.UpdatedBy).CurrentValue = userId;
                         break;
 
-                    case EntityState.Deleted:
-                        entry.State = EntityState.Modified;
 
-                        entry.Entity.MarkAsDeleted(userId);
-                        break;
+                }
+            }
+            // Soft Delete
+            foreach (var entry in ChangeTracker.Entries<ISoftDelete>())
+            {
+                if (entry.State == EntityState.Deleted)
+                {
+                    entry.State = EntityState.Modified;
+                    entry.Entity.MarkAsDeleted(userId);
                 }
             }
 
@@ -241,8 +260,168 @@ namespace E_Commerce.Infrastructure.Persistence
 
 
 
+    public sealed class WishlistConfiguration
+        : IEntityTypeConfiguration<Wishlist>
+    {
+        public void Configure(EntityTypeBuilder<Wishlist> builder)
+        {
+            builder.ToTable("Wishlists");
+
+            builder.HasKey(x => x.Id);
+
+            builder.Property(x => x.CustomerId)
+                   .IsRequired();
+
+            builder.Property(x => x.CreatedAtUtc)
+                   .IsRequired();
+
+            builder.Property(x => x.CreatedBy)
+                   .HasMaxLength(100);
+
+            builder.Property(x => x.UpdatedBy)
+                   .HasMaxLength(100);
+
+
+
+            builder.Property(x => x.RowVersion)
+                   .IsRowVersion();
+
+            builder.HasMany(x => x.Items)
+                   .WithOne(x => x.Wishlist)
+                   .HasForeignKey(x => x.WishlistId)
+                   .OnDelete(DeleteBehavior.Cascade);
+
+            // One wishlist per customer
+            builder.HasIndex(x => x.CustomerId)
+                   .IsUnique();
+        }
+    }
+
+
+    public sealed class WishlistItemConfiguration
+    : IEntityTypeConfiguration<WishlistItem>
+    {
+        public void Configure(EntityTypeBuilder<WishlistItem> builder)
+        {
+            builder.ToTable("WishlistItems");
+
+            builder.HasKey(x => x.Id);
+
+            builder.Property(x => x.ProductId)
+                   .IsRequired();
+
+            builder.Property(x => x.CreatedAtUtc)
+                   .IsRequired();
+
+            builder.Property(x => x.CreatedBy)
+                   .HasMaxLength(100);
+
+            builder.Property(x => x.UpdatedBy)
+                   .HasMaxLength(100);
+
+
+            builder.Property(x => x.RowVersion)
+                   .IsRowVersion();
+
+            // Prevent duplicate products in the same wishlist
+            builder.HasIndex(x => new
+            {
+                x.WishlistId,
+                x.ProductId
+            }).IsUnique();
+
+            builder.HasOne(x => x.Product)
+               .WithMany()
+               .HasForeignKey(x => x.ProductId)
+               .OnDelete(DeleteBehavior.Restrict);
+
+
+        }
+    }
+
+    public sealed class CartConfiguration
+    : IEntityTypeConfiguration<Cart>
+    {
+        public void Configure(EntityTypeBuilder<Cart> builder)
+        {
+            builder.ToTable("Carts");
+
+            builder.HasKey(x => x.Id);
+
+            builder.Property(x => x.CustomerId)
+                   .IsRequired();
+
+            builder.Property(x => x.CreatedAtUtc)
+                   .IsRequired();
+
+            builder.Property(x => x.CreatedBy)
+                   .HasMaxLength(100);
+
+            builder.Property(x => x.UpdatedBy)
+                   .HasMaxLength(100);
+
+
+            builder.Property(x => x.RowVersion)
+                   .IsRowVersion();
+
+            // Cart -> CartItems
+            builder.HasMany(x => x.Items)
+                   .WithOne(x => x.Cart)
+                   .HasForeignKey(x => x.CartId)
+                   .OnDelete(DeleteBehavior.Cascade);
+
+            // One cart per customer
+            builder.HasIndex(x => x.CustomerId)
+                   .IsUnique();
+        }
+    }
+
+
+    public sealed class CartItemConfiguration
+    : IEntityTypeConfiguration<CartItem>
+    {
+        public void Configure(EntityTypeBuilder<CartItem> builder)
+        {
+            builder.ToTable("CartItems");
+
+            builder.HasKey(x => x.Id);
+
+            builder.Property(x => x.ProductId)
+                   .IsRequired();
+
+            builder.Property(x => x.Quantity)
+                   .IsRequired();
+
+            builder.Property(x => x.CreatedAtUtc)
+                   .IsRequired();
+
+            builder.Property(x => x.CreatedBy)
+                   .HasMaxLength(100);
+
+            builder.Property(x => x.UpdatedBy)
+                   .HasMaxLength(100);
+
+
+            builder.Property(x => x.RowVersion)
+                   .IsRowVersion();
+
+            // Prevent duplicate products in the same cart
+            builder.HasIndex(x => new
+            {
+                x.CartId,
+                x.ProductId
+            }).IsUnique();
+
+            // CartItem -> Product
+            builder.HasOne(x => x.Product)
+                   .WithMany()
+                   .HasForeignKey(x => x.ProductId)
+                   .OnDelete(DeleteBehavior.Restrict);
+        }
+    }
+
     public class ApplicationUserConfiguration
-    : IEntityTypeConfiguration<ApplicationUser>
+: IEntityTypeConfiguration<ApplicationUser>
     {
         public void Configure(EntityTypeBuilder<ApplicationUser> builder)
         {

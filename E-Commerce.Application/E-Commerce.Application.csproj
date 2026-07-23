@@ -35,6 +35,7 @@
     <Folder Include="Features\Admin\Users\Commands\UnbanUser\" />
     <Folder Include="Features\Admin\Users\Commands\UpdateProfile\" />
     <Folder Include="Features\Admin\Users\Commands\UploadAvatar\" />
+    <Folder Include="Features\Wishlist\Commands\MoveWishlistToCart\" />
   </ItemGroup>
 
 </Project>

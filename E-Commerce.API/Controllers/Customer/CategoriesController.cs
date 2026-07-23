@@ -1,10 +1,6 @@
 ﻿using E_Commerce.API.DTO;
 using E_Commerce.Application.Features.Cataglog.Category.GetCategories;
-using E_Commerce.Application.Features.Catalog.Categories.Commands.ArchiveCategory;
-using E_Commerce.Application.Features.Catalog.Categories.Commands.CreateCategory;
-using E_Commerce.Application.Features.Catalog.Categories.Commands.UnArchiveCategory;
-using E_Commerce.Application.Features.Catalog.Categories.Commands.UpdateCategory;
-using E_Commerce.Application.Features.Catalog.Categories.Queries.GetCategoryById;
+using E_Commerce.Application.Features.Catalog.Categories.GetCategoryById;
 using E_Commerce.Application.Features.Catalog.Category.Queries.GetCategoryProducts;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
