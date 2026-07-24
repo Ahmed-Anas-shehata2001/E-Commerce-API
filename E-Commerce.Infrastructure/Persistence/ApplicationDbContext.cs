@@ -1,10 +1,12 @@
 ﻿using E_Commerce.Application.Common.Contracts.Identity;
 using E_Commerce.Domain.Common.Base;
+using E_Commerce.Domain.Features.AddressFeature.Entities;
 using E_Commerce.Domain.Features.CartFeature.Entities;
 using E_Commerce.Domain.Features.Catalog.BrandFeature.Entities;
 using E_Commerce.Domain.Features.Catalog.CategoryFeature.Entities;
 using E_Commerce.Domain.Features.Catalog.ProductFeature.Entities;
 using E_Commerce.Domain.Features.Catalog.ReviewFeature.Entities;
+using E_Commerce.Domain.Features.OrderFeature.Entities;
 using E_Commerce.Domain.Features.WishlistFeature.Entities;
 using E_Commerce.Infrastructure.Identity;
 using E_Commerce.Infrastructure.Identity.Identity_Entites;
@@ -45,6 +47,14 @@ namespace E_Commerce.Infrastructure.Persistence
         // cart
         public DbSet<Cart> Carts => Set<Cart>();
         public DbSet<CartItem> CartItems => Set<CartItem>();
+
+        //Address
+        public DbSet<Address> Addresses => Set<Address>();
+
+        // order
+        public DbSet<Order> Orders => Set<Order>();
+        public DbSet<OrderItem> OrderItems => Set<OrderItem>();
+
 
 
 
@@ -419,6 +429,173 @@ namespace E_Commerce.Infrastructure.Persistence
                    .OnDelete(DeleteBehavior.Restrict);
         }
     }
+
+    public sealed class AddressConfiguration
+    : IEntityTypeConfiguration<Address>
+    {
+        public void Configure(EntityTypeBuilder<Address> builder)
+        {
+            builder.ToTable("Addresses");
+
+            builder.HasKey(x => x.Id);
+
+            builder.Property(x => x.FullName)
+                .HasMaxLength(200)
+                .IsRequired();
+
+            builder.Property(x => x.PhoneNumber)
+                .HasMaxLength(20)
+                .IsRequired();
+
+            builder.Property(x => x.Country)
+                .HasMaxLength(100)
+                .IsRequired();
+
+            builder.Property(x => x.City)
+                .HasMaxLength(100)
+                .IsRequired();
+
+            builder.Property(x => x.State)
+                .HasMaxLength(100)
+                .IsRequired();
+
+            builder.Property(x => x.Street)
+                .HasMaxLength(250)
+                .IsRequired();
+
+            builder.Property(x => x.Building)
+                .HasMaxLength(50)
+                .IsRequired();
+
+            builder.Property(x => x.Apartment)
+                .HasMaxLength(50);
+
+            builder.Property(x => x.PostalCode)
+                .HasMaxLength(20)
+                .IsRequired();
+
+            builder.Property(x => x.IsDefault)
+                .HasDefaultValue(false);
+
+            builder.HasOne<ApplicationUser>()
+                .WithMany()
+                .HasForeignKey(x => x.CustomerId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            builder.HasIndex(x => x.CustomerId);
+        }
+    }
+
+    public sealed class OrderConfiguration
+        : IEntityTypeConfiguration<Order>
+    {
+        public void Configure(EntityTypeBuilder<Order> builder)
+        {
+            builder.ToTable("Orders");
+
+            builder.HasKey(x => x.Id);
+
+            builder.Property(x => x.CustomerId)
+                   .IsRequired();
+
+            builder.Property(x => x.RecipientName)
+                   .HasMaxLength(150)
+                   .IsRequired();
+
+            builder.Property(x => x.PhoneNumber)
+                   .HasMaxLength(30)
+                   .IsRequired();
+
+            builder.Property(x => x.Country)
+                   .HasMaxLength(100)
+                   .IsRequired();
+
+            builder.Property(x => x.City)
+                   .HasMaxLength(100)
+                   .IsRequired();
+
+            builder.Property(x => x.State)
+                   .HasMaxLength(100)
+                   .IsRequired();
+
+            builder.Property(x => x.Street)
+                   .HasMaxLength(250)
+                   .IsRequired();
+
+            builder.Property(x => x.Building)
+                   .HasMaxLength(100)
+                   .IsRequired();
+
+            builder.Property(x => x.Apartment)
+                   .HasMaxLength(100);
+
+            builder.Property(x => x.PostalCode)
+                   .HasMaxLength(30)
+                   .IsRequired();
+
+            builder.Property(x => x.Status)
+                   .HasConversion<int>()
+                   .IsRequired();
+
+            builder.Property(x => x.OrderedAtUtc)
+                   .IsRequired();
+
+            builder.Property(x => x.CreatedBy)
+                   .HasMaxLength(100);
+
+            builder.Property(x => x.UpdatedBy)
+                   .HasMaxLength(100);
+
+            builder.Property(x => x.RowVersion)
+                   .IsRowVersion();
+
+            builder.HasMany(x => x.Items)
+                   .WithOne(x => x.Order)
+                   .HasForeignKey(x => x.OrderId)
+                   .OnDelete(DeleteBehavior.Cascade);
+
+            builder.Property(x => x.ShippingAddressId)
+       .IsRequired();
+
+            builder.HasOne(x => x.ShippingAddress)
+                   .WithMany()
+                   .HasForeignKey(x => x.ShippingAddressId)
+                   .OnDelete(DeleteBehavior.Restrict);
+        }
+    }
+
+    public sealed class OrderItemConfiguration
+    : IEntityTypeConfiguration<OrderItem>
+{
+    public void Configure(EntityTypeBuilder<OrderItem> builder)
+    {
+        builder.ToTable("OrderItems");
+
+        builder.HasKey(x => x.Id);
+
+        builder.Property(x => x.ProductId)
+               .IsRequired();
+
+        builder.Property(x => x.ProductName)
+               .HasMaxLength(250)
+               .IsRequired();
+
+        builder.Property(x => x.UnitPrice)
+               .HasPrecision(18, 2);
+
+        builder.Property(x => x.Quantity)
+               .IsRequired();
+
+        builder.Property(x => x.CreatedBy)
+               .HasMaxLength(100);
+
+        builder.Property(x => x.UpdatedBy)
+               .HasMaxLength(100);
+
+        builder.Property(x => x.RowVersion)
+               .IsRowVersion();
+    }
+}
 
     public class ApplicationUserConfiguration
 : IEntityTypeConfiguration<ApplicationUser>

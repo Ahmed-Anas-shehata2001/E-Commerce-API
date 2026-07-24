@@ -23,6 +23,14 @@
     <Folder Include="Common\Contracts\Storage\" />
     <Folder Include="Common\Contracts\Payments\" />
     <Folder Include="Common\Mapping\" />
+    <Folder Include="Features\Admin\Orders\ConfirmOrder\" />
+    <Folder Include="Features\Admin\Orders\RefundOrder\" />
+    <Folder Include="Features\Admin\Orders\CancelOrder\" />
+    <Folder Include="Features\Admin\Orders\StartProcessingOrder\" />
+    <Folder Include="Features\Admin\Orders\ShipOrder\" />
+    <Folder Include="Features\Admin\Orders\DeliverOrder\" />
+    <Folder Include="Features\Admin\Orders\GetOrdersByStatus\" />
+    <Folder Include="Features\Admin\Orders\GetAllOrders\" />
     <Folder Include="Features\Admin\Reports %28 later %29\" />
     <Folder Include="Features\Cataglog\Product\Quereis\GetProductsByCategory\" />
     <Folder Include="Features\Cataglog\Product\Quereis\GetRelatedProducts\" />

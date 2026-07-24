@@ -147,14 +147,32 @@ public sealed class Product : SoftDeleteEntity
         BrandId = brandId;
     }
 
-    public void AdjustStock(int quantity)
+    public void SetStock(int stock)
     {
-        var newStock = Stock + quantity;
-
-        if (newStock < 0)
+        if (stock < 0)
             throw new InvalidStockException();
 
-        Stock = newStock;
+        Stock = stock;
+    }
+
+    public bool IsInStock() => Stock > 0;
+    public void IncreaseStock(int quantity)
+    {
+        if (quantity <= 0)
+            throw new ArgumentException("Quantity must be greater than zero.");
+
+        Stock += quantity;
+    }
+
+    public void DecreaseStock(int quantity)
+    {
+        if (quantity <= 0)
+            throw new ArgumentException("Quantity must be greater than zero.");
+
+        if (Stock < quantity)
+            throw new InvalidStockException();
+
+        Stock -= quantity;
     }
 
 
@@ -174,7 +192,8 @@ public sealed class Product : SoftDeleteEntity
         Status = ProductStatus.Published;
     }
 
-    public bool IsInStock() => Stock > 0;
+
+
 
     public void ApplyDiscount(
     decimal percentage,
