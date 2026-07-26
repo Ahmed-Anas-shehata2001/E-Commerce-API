@@ -7,6 +7,7 @@ using E_Commerce.Domain.Features.Catalog.CategoryFeature.Entities;
 using E_Commerce.Domain.Features.Catalog.ProductFeature.Entities;
 using E_Commerce.Domain.Features.Catalog.ReviewFeature.Entities;
 using E_Commerce.Domain.Features.OrderFeature.Entities;
+using E_Commerce.Domain.Features.PaymentFeature.Entities;
 using E_Commerce.Domain.Features.WishlistFeature.Entities;
 using E_Commerce.Infrastructure.Identity;
 using E_Commerce.Infrastructure.Identity.Identity_Entites;
@@ -54,6 +55,10 @@ namespace E_Commerce.Infrastructure.Persistence
         // order
         public DbSet<Order> Orders => Set<Order>();
         public DbSet<OrderItem> OrderItems => Set<OrderItem>();
+
+
+        // payment 
+        public DbSet<Payment> Payments => Set<Payment>();
 
 
 
@@ -596,6 +601,74 @@ namespace E_Commerce.Infrastructure.Persistence
                .IsRowVersion();
     }
 }
+
+    public sealed class PaymentConfiguration : IEntityTypeConfiguration<Payment>
+    {
+        public void Configure(EntityTypeBuilder<Payment> builder)
+        {
+            builder.ToTable("Payments");
+
+            builder.HasKey(p => p.Id);
+
+            // ========================
+            // Properties
+            // ========================
+
+            builder.Property(p => p.Amount)
+                .HasPrecision(18, 2)
+                .IsRequired();
+
+            builder.Property(p => p.PaymentMethod)
+                .HasConversion<int>()
+                .IsRequired();
+
+            builder.Property(p => p.Status)
+                .HasConversion<int>()
+                .IsRequired();
+
+            builder.Property(p => p.TransactionId)
+                .HasMaxLength(200);
+
+            builder.Property(p => p.PaymentIntentId)
+                .HasMaxLength(200);
+
+            builder.Property(p => p.Gateway)
+                .HasMaxLength(100);
+
+            builder.Property(p => p.PaidAtUtc);
+
+            builder.Property(p => p.RefundedAtUtc);
+
+            // ========================
+            // Relationship
+            // ========================
+            /*
+             * 
+             * 
+             For a real e-commerce system, I'd recommend one Order → many Payment records.
+            Why?
+            Because payment gateways can fail, users retry payments, and refunds may create additional payment-related records. Keeping a history of all attempts is valuable for auditing and troubleshooting.
+             */
+            builder.HasOne(p => p.Order)
+                .WithMany()
+                .HasForeignKey(p => p.OrderId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // ========================
+            // Indexes
+            // ========================
+
+            builder.HasIndex(p => p.OrderId);
+
+            builder.HasIndex(p => p.TransactionId)
+                .IsUnique()
+                .HasFilter("[TransactionId] IS NOT NULL");
+
+            builder.HasIndex(p => p.PaymentIntentId)
+                .IsUnique()
+                .HasFilter("[PaymentIntentId] IS NOT NULL");
+        }
+    }
 
     public class ApplicationUserConfiguration
 : IEntityTypeConfiguration<ApplicationUser>

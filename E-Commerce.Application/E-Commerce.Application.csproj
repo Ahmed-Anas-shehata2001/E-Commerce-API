@@ -43,6 +43,8 @@
     <Folder Include="Features\Admin\Users\Commands\UnbanUser\" />
     <Folder Include="Features\Admin\Users\Commands\UpdateProfile\" />
     <Folder Include="Features\Admin\Users\Commands\UploadAvatar\" />
+    <Folder Include="Features\Payment\Queries\" />
+    <Folder Include="Features\Payment\Commands\" />
     <Folder Include="Features\Wishlist\Commands\MoveWishlistToCart\" />
   </ItemGroup>
 
