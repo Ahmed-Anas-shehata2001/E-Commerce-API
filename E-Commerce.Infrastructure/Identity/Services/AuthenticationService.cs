@@ -1,4 +1,5 @@
 ﻿using E_Commerce.Application.Common.Constants;
+using E_Commerce.Application.Common.Contracts.Email;
 using E_Commerce.Application.Common.Contracts.Identity;
 using E_Commerce.Application.Common.Contracts.Identity.Models;
 using E_Commerce.Domain.Common.Result;

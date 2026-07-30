@@ -1,7 +1,4 @@
-﻿using E_Commerce.Application.Features.Catalog.Brands.Commands.ArchiveBrand;
-using E_Commerce.Application.Features.Catalog.Brands.Commands.CreateBrand;
-using E_Commerce.Application.Features.Catalog.Brands.Commands.UnArchiveBrand;
-using E_Commerce.Application.Features.Catalog.Brands.Commands.UpdateBrand;
+﻿
 using E_Commerce.Application.Features.Catalog.Brands.Queries.GetBrandById;
 using E_Commerce.Application.Features.Catalog.Brands.Queries.GetBrandProducts;
 using E_Commerce.Application.Features.Catalog.Brands.Queries.GetBrands;

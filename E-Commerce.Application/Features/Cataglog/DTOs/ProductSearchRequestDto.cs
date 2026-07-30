@@ -1,4 +1,4 @@
-﻿using E_Commerce.Application.Common.Contracts.Identity.Models;
+﻿using E_Commerce.Application.Common.Models;
 
 public sealed class ProductSearchRequest : PaginationRequest
 {

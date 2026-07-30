@@ -1,5 +1,4 @@
 ﻿using E_Commerce.Application.Features.Cataglog.Product.Quereis.GetProductById;
-using E_Commerce.Application.Features.Catalog.Commands.CreateProduct;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
@@ -16,7 +15,7 @@ namespace E_Commerce.API.Controllers.Customer
             _mediator = mediator;
         }
 
-  
+
 
         [HttpGet("{id:guid}")]
         public async Task<IActionResult> GetById(

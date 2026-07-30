@@ -8,11 +8,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Extensions\" />
-    <Folder Include="ExternalServices\" />
     <Folder Include="Identity\Autherization\Handler\" />
     <Folder Include="Identity\Autherization\Policies\" />
-    <Folder Include="Services\" />
   </ItemGroup>
 
   <ItemGroup>

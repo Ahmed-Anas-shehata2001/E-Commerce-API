@@ -1,6 +1,4 @@
-﻿using E_Commerce.Application.Features.Catalog.Reviews.Commands.CreateReview;
-using E_Commerce.Application.Features.Catalog.Reviews.Commands.DeleteReview;
-using E_Commerce.Application.Features.Catalog.Reviews.Commands.UpdateReview;
+﻿
 using E_Commerce.Application.Features.Catalog.Reviews.Queries.GetProductReviews;
 using E_Commerce.Application.Features.Catalog.Reviews.Queries.GetReviewById;
 using MediatR;

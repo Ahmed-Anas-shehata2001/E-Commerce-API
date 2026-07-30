@@ -1,5 +1,4 @@
-﻿using E_Commerce.API.DTO;
-using E_Commerce.Application.Features.Cataglog.Category.GetCategories;
+﻿using E_Commerce.Application.Features.Cataglog.Category.GetCategories;
 using E_Commerce.Application.Features.Catalog.Categories.GetCategoryById;
 using E_Commerce.Application.Features.Catalog.Category.Queries.GetCategoryProducts;
 using MediatR;
@@ -42,7 +41,7 @@ namespace E_Commerce.API.Controllers.Customer
             return Ok(result);
         }
 
-   
+
 
         [HttpGet("{id:guid}/products")]
         public async Task<IActionResult> GetProducts(

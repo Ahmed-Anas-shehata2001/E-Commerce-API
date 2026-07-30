@@ -1,5 +1,6 @@
 ﻿using E_Commerce.Application.Common.Contracts.Identity;
 using E_Commerce.Application.Common.Contracts.Identity.Models;
+using E_Commerce.Application.Common.Models;
 using E_Commerce.Application.Features.Admin.Sellers.Queries.GetSellers;
 using E_Commerce.Application.Features.Admin.Sellers.Queries.GetSellerStatisitics;
 using E_Commerce.Domain.Common.Errors;
@@ -10,7 +11,6 @@ using E_Commerce.Infrastructure.Persistence;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using SendGrid.Helpers.Mail;
 
 namespace E_Commerce.Infrastructure.Identity.Services
 {
@@ -24,7 +24,7 @@ namespace E_Commerce.Infrastructure.Identity.Services
         public UserService(
             UserManager<ApplicationUser> userManager,
             RoleManager<ApplicationRole> roleManager,
-            ILogger<UserService> logger , ApplicationDbContext context)
+            ILogger<UserService> logger, ApplicationDbContext context)
         {
             _userManager = userManager;
             _roleManager = roleManager;

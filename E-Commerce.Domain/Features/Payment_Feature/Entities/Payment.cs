@@ -40,7 +40,7 @@ public class Payment  : AuditableEntity
 
     public string? PaymentIntentId { get; private set; }
 
-    public string? Gateway { get; private set; }
+    public string Gateway { get; private set; }
 
     // Audit
     public DateTime? PaidAtUtc { get; private set; }
@@ -68,6 +68,13 @@ public class Payment  : AuditableEntity
         Status = PaymentStatus.Pending;
 
         CreatedAtUtc = DateTime.UtcNow;
+    }
+
+    public void MarkAsPending(string transactionId, string paymentIntentId)
+    {
+        TransactionId = transactionId;
+        PaymentIntentId = paymentIntentId;
+        Status = PaymentStatus.Pending;
     }
 
     public void MarkAsPaid(string transactionId, string paymentIntentId)

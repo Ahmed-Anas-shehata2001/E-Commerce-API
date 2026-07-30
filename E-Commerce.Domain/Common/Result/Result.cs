@@ -18,8 +18,15 @@ namespace E_Commerce.Domain.Common.Result
             Error = error;
         }
 
+        // Success (no value)
         public static Result Success()
             => new(true, null);
+
+        // Success (with value)
+        public static Result<T> Success<T>(T value)
+            => Result<T>.Success(value);
+
+
 
         public static Result Failure(Error error)
             => new(false, error);
@@ -38,6 +45,15 @@ namespace E_Commerce.Domain.Common.Result
             var message = string.Join(", ", messages);
             return new(false, new Error(message, string.Empty));
         }
+
+        public static Result<T> Failure<T>(string message)
+    => Result<T>.Failure(message);
+
+        public static Result<T> Failure<T>(Error error)
+            => Result<T>.Failure(error);
+
+        public static Result<T> Failure<T>(params string[] messages)
+            => Result<T>.Failure(messages);
     }
 
     // 2. Generic Result<T>   // success / failure + value (for success) or error (for failure)  // actions with data (GetProduct, GetUser, etc.)
@@ -72,5 +88,7 @@ namespace E_Commerce.Domain.Common.Result
             var message = string.Join(", ", messages);
             return new(false, default!, new Error(message, string.Empty));
         }
+
+
     }
 }

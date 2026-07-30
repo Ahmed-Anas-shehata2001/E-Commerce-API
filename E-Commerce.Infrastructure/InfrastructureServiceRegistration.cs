@@ -1,14 +1,18 @@
-﻿using E_Commerce.Application.Common.Contracts.Identity;
+﻿using E_Commerce.Application.Common.Contracts.Email;
+using E_Commerce.Application.Common.Contracts.Identity;
+using E_Commerce.Application.Common.Contracts.Payments;
 using E_Commerce.Infrastructure.Identity.Autherization;
 using E_Commerce.Infrastructure.Identity.Extensions;
 using E_Commerce.Infrastructure.Identity.JWT;
 using E_Commerce.Infrastructure.Identity.Services;
-using E_Commerce.Infrastructure.Identity.Services.SendGrid;
 using E_Commerce.Infrastructure.Persistence.Extensions;
+using E_Commerce.Infrastructure.Services.Payment;
+using E_Commerce.Infrastructure.Services.SendGrid;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using SendGrid;
+using System.Net.Http.Headers;
 using UAParser;
 
 namespace E_Commerce.Infrastructure
@@ -59,11 +63,32 @@ namespace E_Commerce.Infrastructure
             services.AddScoped<IEmailSender, SendGridEmailService>();
 
 
+
+
             // register HttpContext Accessor
             services.AddHttpContextAccessor();
 
             // register UAParser
             services.AddSingleton(Parser.GetDefault());
+
+
+            // Paymob Options
+            services.Configure<PaymobOptions>(
+                configuration.GetSection(PaymobOptions.SectionName));
+            // payment services
+            services.AddScoped<IPaymentService, PaymentService>();
+            // Paymob Gateway (Typed HttpClient)
+            services.AddHttpClient<IPaymentGateway, PaymobGateway>((sp, client) =>
+            {
+                var options = sp.GetRequiredService<IOptions<PaymobOptions>>().Value;
+
+                client.BaseAddress = new Uri(options.BaseUrl);
+                client.Timeout = TimeSpan.FromSeconds(30);
+
+                client.DefaultRequestHeaders.Accept.Add(
+                    new MediaTypeWithQualityHeaderValue("application/json"));
+            });
+
 
 
             return services;

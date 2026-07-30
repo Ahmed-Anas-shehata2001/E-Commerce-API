@@ -19,9 +19,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Common\Contracts\Email\" />
     <Folder Include="Common\Contracts\Storage\" />
-    <Folder Include="Common\Contracts\Payments\" />
     <Folder Include="Common\Mapping\" />
     <Folder Include="Features\Admin\Orders\ConfirmOrder\" />
     <Folder Include="Features\Admin\Orders\RefundOrder\" />
@@ -43,8 +41,7 @@
     <Folder Include="Features\Admin\Users\Commands\UnbanUser\" />
     <Folder Include="Features\Admin\Users\Commands\UpdateProfile\" />
     <Folder Include="Features\Admin\Users\Commands\UploadAvatar\" />
-    <Folder Include="Features\Payment\Queries\" />
-    <Folder Include="Features\Payment\Commands\" />
+    <Folder Include="Features\Payment\Queries\GetPaymentStatistics\" />
     <Folder Include="Features\Wishlist\Commands\MoveWishlistToCart\" />
   </ItemGroup>
 

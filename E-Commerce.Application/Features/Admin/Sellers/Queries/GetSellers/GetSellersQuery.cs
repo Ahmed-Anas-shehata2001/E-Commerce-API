@@ -1,4 +1,4 @@
-﻿using E_Commerce.Application.Common.Contracts.Identity.Models;
+﻿using E_Commerce.Application.Common.Models;
 using E_Commerce.Domain.Common.Result;
 using MediatR;
 

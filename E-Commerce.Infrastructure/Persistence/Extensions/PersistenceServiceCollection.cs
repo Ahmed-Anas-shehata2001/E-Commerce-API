@@ -1,5 +1,6 @@
 ﻿using E_Commerce.Application.Features.Cataglog.Product;
 using E_Commerce.Application.Features.Catalog.Reviews;
+using E_Commerce.Application.Features.Payment;
 using E_Commerce.Domain.Common.Interfaces;
 using E_Commerce.Domain.Features.AddressFeature.Interfaces;
 using E_Commerce.Domain.Features.Cart_Feature;
@@ -54,6 +55,7 @@ namespace E_Commerce.Infrastructure.Persistence.Extensions
             services.AddScoped<IAddressRepository, AddressRepository>();
             services.AddScoped<IOrderRepository, OrderRepository>();
             services.AddScoped<IPaymentRepository , PaymentRepository>();
+            services.AddScoped<IPaymentReadRepository, PaymentReadRepository>();
 
             // register Unit of work
             services.AddScoped<IUnitOfWork, UnitOfWork>();

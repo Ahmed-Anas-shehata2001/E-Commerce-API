@@ -49,6 +49,12 @@ public sealed class Order : AuditableEntity
     private readonly List<OrderItem> _items = [];
     public IReadOnlyCollection<OrderItem> Items => _items;
 
+    public bool IsPaid { get; private set; }
+
+    public DateTime? PaidAtUtc { get; private set; }
+
+
+
     private Order() { }
 
     public Order(
@@ -154,5 +160,16 @@ public sealed class Order : AuditableEntity
             throw new InvalidOperationException("Only shipped orders can be delivered.");
 
         Status = OrderStatus.Delivered;
+    }
+
+    public void MarkAsPaid()
+    {
+        if (IsPaid)
+            throw new InvalidOperationException("Order is already paid.");
+
+        IsPaid = true;
+        PaidAtUtc = DateTime.UtcNow;
+
+        Confirm();
     }
 }

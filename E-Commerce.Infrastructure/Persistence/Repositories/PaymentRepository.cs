@@ -23,25 +23,10 @@ public sealed class PaymentRepository : IPaymentRepository
                 cancellationToken);
     }
 
-    public async Task<Payment?> GetByOrderIdAsync(
-        Guid orderId,
-        CancellationToken cancellationToken = default)
-    {
-        return await _context.Payments
-            .FirstOrDefaultAsync(
-                p => p.OrderId == orderId,
-                cancellationToken);
-    }
 
-    public async Task<IReadOnlyList<Payment>> GetPaymentsByUserIdAsync(
-        Guid customerId,
-        CancellationToken cancellationToken = default)
-    {
-        return await _context.Payments
-            .Include(p => p.Order)
-            .Where(p => p.Order.CustomerId == customerId)
-            .ToListAsync(cancellationToken);
-    }
+
+
+
 
     public async Task AddAsync(
         Payment payment,
@@ -79,19 +64,9 @@ public sealed class PaymentRepository : IPaymentRepository
                 cancellationToken);
     }
 
-    public async Task<IReadOnlyList<Payment>> GetPendingPaymentsAsync(
-        CancellationToken cancellationToken = default)
-    {
-        return await _context.Payments
-            .Where(p => p.Status == PaymentStatus.Pending)
-            .ToListAsync(cancellationToken);
-    }
 
-    public async Task<IReadOnlyList<Payment>> GetFailedPaymentsAsync(
-        CancellationToken cancellationToken = default)
-    {
-        return await _context.Payments
-            .Where(p => p.Status == PaymentStatus.Failed)
-            .ToListAsync(cancellationToken);
-    }
+
+
+
+
 }
